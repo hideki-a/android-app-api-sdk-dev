@@ -12,5 +12,7 @@ res/values/server.xmlにサーバーを定義してください。以下サン�
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="development">https://192.168.1.20/mt/mt-data-api.cgi</string>
+    <string name="development_mt_username">your-mt-username</string>
+    <string name="development_mt_password">your-mt-password</string>
 </resources>
 ```

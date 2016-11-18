@@ -4,6 +4,8 @@ import android.content.AsyncTaskLoader;
 import android.content.Context;
 import android.util.Log;
 
+import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.HashMap;
@@ -17,10 +19,14 @@ import pw.anothersky.sitereader.data.Entries;
 
 public class EntryLoader extends AsyncTaskLoader<Entries> {
     private String apiURL;
+    private String apiUsername;
+    private String apiPassword;
 
-    public EntryLoader(Context context, String apiURL) {
+    public EntryLoader(Context context, String apiURL, String apiUsername, String apiPassword) {
         super(context);
         this.apiURL = apiURL;
+        this.apiUsername = apiUsername;
+        this.apiPassword = apiPassword;
     }
 
     @Override
@@ -37,6 +43,39 @@ public class EntryLoader extends AsyncTaskLoader<Entries> {
         }
 
         Log.i("API Response", String.valueOf(json));
+
+        // Test: APIの内容を出力
+        // http://d.hatena.ne.jp/androidprogram/20100622/1277229166
+        try {
+            JSONArray items = json.getJSONArray("items");
+
+            int nItems = items.length();
+            JSONObject[] entriesObject = new JSONObject[nItems];
+
+            for (int i = 0; i < nItems; i += 1) {
+                entriesObject[i] = items.getJSONObject(i);
+            }
+
+            for (int i = 0; i < nItems; i += 1) {
+                String title = entriesObject[i].getString("title");
+                Log.i("API Response", title);
+            }
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        // Test: Authentication
+        HashMap<String, String> authParams = new HashMap<String, String>();
+        authParams.put("username", this.apiUsername);
+        authParams.put("password", this.apiPassword);
+        authParams.put("remember", "1");
+        api.authentication(authParams);
+
+        // Test: 認証を必要とするアクセスの試験
+        HashMap<String, String> getDraftParams = new HashMap<String, String>();
+        getDraftParams.put("status", "1");
+        JSONObject draftEntries = api.listEntries(1, getDraftParams);
+        Log.i("API Response", String.valueOf(draftEntries));
 
         return null;
     }

@@ -18,7 +18,9 @@ public class MainActivity extends AppCompatActivity {
 
         // Test
         String apiURL = getString(R.string.development);
-        EntryLoader loader = new EntryLoader(MainActivity.this, apiURL);
+        String apiUsername = getString(R.string.development_mt_username);
+        String apiPassword = getString(R.string.development_mt_password);
+        EntryLoader loader = new EntryLoader(MainActivity.this, apiURL, apiUsername, apiPassword);
         loader.forceLoad();
     }
 }
