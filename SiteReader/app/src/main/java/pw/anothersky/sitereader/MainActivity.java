@@ -2,12 +2,6 @@ package pw.anothersky.sitereader;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
-import android.util.Log;
-
-import java.io.IOException;
-import java.net.HttpURLConnection;
-
-import pw.anothersky.movabletype.apisdk.DataAPI;
 
 public class MainActivity extends AppCompatActivity {
 
