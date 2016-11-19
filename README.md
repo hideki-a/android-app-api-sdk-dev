@@ -2,11 +2,11 @@
 
 研究・開発中のアプリです。
 
-## 使い方
+## サーバーの定義
 
-### サーバーの定義
+### 開発用
 
-res/values/server.xmlにサーバーを定義してください。以下サンプルです。
+`SiteReader/app/src/main/res/values/server.xml`にサーバーを定義してください。以下サンプルです。
 
 ```
 <?xml version="1.0" encoding="utf-8"?>
@@ -15,4 +15,14 @@ res/values/server.xmlにサーバーを定義してください。以下サン�
     <string name="development_mt_username">your-mt-username</string>
     <string name="development_mt_password">your-mt-password</string>
 </resources>
+```
+
+### Unit Test用
+
+`SiteReader/app/src/test/resources/server.txt`にサーバーを定義してください。以下サンプルです。
+
+```
+https://192.168.1.20/mt/mt-data-api.cgi
+your-mt-username
+your-mt-password
 ```

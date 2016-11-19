@@ -48,3 +48,4 @@ captures/
 
 # User Settings
 /SiteReader/app/src/main/res/values/server.xml
+/SiteReader/app/src/test/resources/server.txt
