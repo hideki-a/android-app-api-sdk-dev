@@ -9,22 +9,22 @@ import java.io.InputStreamReader;
 
 import static org.junit.Assert.*;
 
-import pw.anothersky.movabletype.apisdk.DataAPI;
+import pw.anothersky.movabletype.apisdk.DataApi;
 
 /**
  * Local unit test, which will execute on the development machine (host).
  *
  * @see <a href="http://d.android.com/tools/testing">Testing documentation</a>
  */
-public class DataAPIUnitTest {
-    private static final DataAPI api = DataAPI.sharedInstance;
-    private static String username;
+public class DataApiUnitTest {
+    private static final DataApi api = DataApi.sharedInstance;
+    private static String userName;
     private static String password;
     private static String comment;
 
     @BeforeClass
     public static void setupAPIConnection() throws Exception {
-        InputStream in = DataAPIUnitTest.class.getClassLoader().getResourceAsStream("server.txt");
+        InputStream in = DataApiUnitTest.class.getClassLoader().getResourceAsStream("server.txt");
         BufferedReader reader = new BufferedReader(new InputStreamReader(in));
         String data[] = new String[3];
         String line;
@@ -34,13 +34,13 @@ public class DataAPIUnitTest {
             i += 1;
         }
 
-        DataAPIUnitTest.api.APIBaseURL = data[0];
-        DataAPIUnitTest.username = data[1];
-        DataAPIUnitTest.password = data[2];
+        DataApiUnitTest.api.apiBaseUrl = data[0];
+        DataApiUnitTest.userName = data[1];
+        DataApiUnitTest.password = data[2];
     }
 
     @Test
     public void apiURLTest() throws Exception {
-        assertNotEquals("http://localhost/cgi-bin/MT-6.1/mt-data-api.cgi", this.api.APIBaseURL);
+        assertNotEquals("http://localhost/cgi-bin/MT-6.1/mt-data-api.cgi", this.api.apiBaseUrl);
     }
 }

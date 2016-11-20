@@ -19,22 +19,22 @@ import okhttp3.Response;
  * Created by Hideki Abe on 2016/11/17.
  */
 
-public class DataAPI extends JSONObject {
+public class DataApi extends JSONObject {
     public String endpointVersion = "v3";
-    public String APIBaseURL = "http://localhost/cgi-bin/MT-6.1/mt-data-api.cgi";
-    public String clientID = "MTDataAPIJavaClient";
+    public String apiBaseUrl = "http://localhost/cgi-bin/MT-6.1/mt-data-api.cgi";
+    public String clientId = "MTDataAPIJavaClient";
 
-    public static final DataAPI sharedInstance = new DataAPI();
+    public static final DataApi sharedInstance = new DataApi();
 
     private String token = "";
-    private String sessionID = "";
+    private String sessionId = "";
 
-    private String APIURL() {
-        return APIBaseURL + "/" + endpointVersion;
+    private String apiUrl() {
+        return apiBaseUrl + "/" + endpointVersion;
     }
 
-    private String APIURL_v2() {
-        return APIBaseURL + "/v2";
+    private String apiurlV2() {
+        return apiBaseUrl + "/v2";
     }
 
     private String parseParams(HashMap<String, String> params) {
@@ -63,7 +63,7 @@ public class DataAPI extends JSONObject {
                 formBody.add(param.getKey(), param.getValue());
             }
 
-            formBody.add("clientId", this.clientID);
+            formBody.add("clientId", this.clientId);
 
             return formBody.build();
         }
@@ -81,8 +81,8 @@ public class DataAPI extends JSONObject {
         }
 
         if (useSession) {
-            if (this.sessionID != "") {
-                request.addHeader("X-MT-Authorization", "MTAuth sessionId" + this.sessionID);
+            if (this.sessionId != "") {
+                request.addHeader("X-MT-Authorization", "MTAuth sessionId" + this.sessionId);
             }
         }
 
@@ -135,22 +135,22 @@ public class DataAPI extends JSONObject {
         try {
             if (json.has("accessToken")) {
                 this.token = json.getString("accessToken");
-                this.sessionID = json.getString("sessionId");
+                this.sessionId = json.getString("sessionId");
             }
         } catch (JSONException e) {
             e.printStackTrace();
         }
 
-        Log.i("DataAPI Debug", String.valueOf(json));
+        Log.i("DataApi Debug", String.valueOf(json));
     }
 
     public void authentication(HashMap<String, String> params) {
-        String url = this.APIURL() + "/authentication";
+        String url = this.apiUrl() + "/authentication";
         this.authenticationCommon(url, params);
     }
 
     public void authenticationV2(HashMap<String, String> params) {
-        String url = this.APIURL_v2() + "/authentication";
+        String url = this.apiurlV2() + "/authentication";
         this.authenticationCommon(url, params);
     }
 
@@ -160,19 +160,19 @@ public class DataAPI extends JSONObject {
     }
 
     public JSONObject listSites() {
-        String url = this.APIURL() + "/sites";
+        String url = this.apiUrl() + "/sites";
         return this.fetchList(url);
     }
 
-    public JSONObject listEntries(int siteID, HashMap<String, String> params) {
+    public JSONObject listEntries(int siteId, HashMap<String, String> params) {
         String paramStr = this.parseParams(params);
-        String url = this.APIURL() + "/sites/" + siteID + "/entries" + paramStr;
+        String url = this.apiUrl() + "/sites/" + siteId + "/entries" + paramStr;
         return this.fetchList(url);
     }
 
-    public JSONObject listCategories(int siteID, HashMap<String, String> params) {
+    public JSONObject listCategories(int siteId, HashMap<String, String> params) {
         String paramStr = this.parseParams(params);
-        String url = this.APIURL() + "/sites/" + siteID + "/categories" + paramStr;
+        String url = this.apiUrl() + "/sites/" + siteId + "/categories" + paramStr;
         return this.fetchList(url);
     }
 }

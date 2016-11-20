@@ -10,7 +10,7 @@ import org.json.JSONObject;
 
 import java.util.HashMap;
 
-import pw.anothersky.movabletype.apisdk.DataAPI;
+import pw.anothersky.movabletype.apisdk.DataApi;
 import pw.anothersky.sitereader.data.Entries;
 
 /**
@@ -18,21 +18,21 @@ import pw.anothersky.sitereader.data.Entries;
  */
 
 public class EntryLoader extends AsyncTaskLoader<Entries> {
-    private String apiURL;
+    private String apiUrl;
     private String apiUsername;
     private String apiPassword;
 
-    public EntryLoader(Context context, String apiURL, String apiUsername, String apiPassword) {
+    public EntryLoader(Context context, String apiUrl, String apiUsername, String apiPassword) {
         super(context);
-        this.apiURL = apiURL;
+        this.apiUrl = apiUrl;
         this.apiUsername = apiUsername;
         this.apiPassword = apiPassword;
     }
 
     @Override
     public Entries loadInBackground() {
-        DataAPI api = DataAPI.sharedInstance;
-        api.APIBaseURL = this.apiURL;
+        DataApi api = DataApi.sharedInstance;
+        api.apiBaseUrl = this.apiUrl;
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("limit", "5");
         params.put("search", "アクセシビリティ");
