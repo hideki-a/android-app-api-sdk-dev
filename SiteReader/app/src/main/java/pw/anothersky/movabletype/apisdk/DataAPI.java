@@ -40,6 +40,9 @@ import okhttp3.Request;
 import okhttp3.RequestBody;
 import okhttp3.Response;
 
+/**
+ * Movable Type DataAPIにアクセスするためのクラスです。
+ */
 public class DataApi extends JSONObject {
     public String endpointVersion = "v3";
     public String apiBaseUrl = "http://localhost/cgi-bin/MT-6.1/mt-data-api.cgi";
@@ -165,11 +168,13 @@ public class DataApi extends JSONObject {
         Log.i("DataApi Debug", String.valueOf(json));
     }
 
+    /** 新しいセッションを確立し、アクセストークンを取得します。 */
     public void authentication(HashMap<String, String> params) {
         String url = this.apiUrl() + "/authentication";
         this.authenticationCommon(url, params);
     }
 
+    /** エンドポイントバージョン2で新しいセッションを確立し、アクセストークンを取得します。 */
     public void authenticationV2(HashMap<String, String> params) {
         String url = this.apiurlV2() + "/authentication";
         this.authenticationCommon(url, params);
@@ -180,17 +185,20 @@ public class DataApi extends JSONObject {
         return buildJSON(responseBody);
     }
 
+    /** サイトの一覧を取得します。 */
     public JSONObject listSites() {
         String url = this.apiUrl() + "/sites";
         return this.fetchList(url);
     }
 
+    /** ブログ記事の一覧を取得します。 */
     public JSONObject listEntries(int siteId, HashMap<String, String> params) {
         String paramStr = this.parseParams(params);
         String url = this.apiUrl() + "/sites/" + siteId + "/entries" + paramStr;
         return this.fetchList(url);
     }
 
+    /** カテゴリの一覧を取得します。 */
     public JSONObject listCategories(int siteId, HashMap<String, String> params) {
         String paramStr = this.parseParams(params);
         String url = this.apiUrl() + "/sites/" + siteId + "/categories" + paramStr;
