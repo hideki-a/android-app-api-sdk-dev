@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:padding="@dimen/list_item_padding"
+    android:orientation="vertical">
+
+    <TextView
+        android:id="@+id/Title"
+        style="@style/List.Title"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="記事のタイトルが入る"/>
+
+    <TextView
+        android:id="@+id/PubDate"
+        style="@style/List.SubText"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        tools:text="2016-11-21 12:00:00"/>
+
+</LinearLayout>

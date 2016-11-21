@@ -4,12 +4,12 @@ package pw.anothersky.sitereader.data;
  * Created by Hideki on 2016/11/17.
  */
 
-public class Entries {
+public class Entry {
     private long id;
     private String title;
     private String body;
     private String url;
-    private long date;
+    private String date;
 
     public long getId() {
         return id;
@@ -43,11 +43,11 @@ public class Entries {
         this.url = url;
     }
 
-    public long getDate() {
+    public String getDate() {
         return date;
     }
 
-    public void setDate(long date) {
+    public void setDate(String date) {
         this.date = date;
     }
 }
