@@ -29,36 +29,10 @@ public class EntryLoader extends AsyncTaskLoader<Entries> {
     public Entries loadInBackground() {
         DataApi api = DataApi.sharedInstance;
         api.apiBaseUrl = mContext.getString(R.string.development);
-        HashMap<String, String> params = new HashMap<String, String>();
-        params.put("limit", "5");
-        params.put("search", "アクセシビリティ");
-        JSONObject json = api.listEntries(1, params);
 
-        if (json == null) {
-            return null;
-        }
-
+        // Test: 1記事の取得
+        JSONObject json = api.getEntry(1, 838, null);
         Log.i("API Response", String.valueOf(json));
-
-        // Test: APIの内容を出力
-        // http://d.hatena.ne.jp/androidprogram/20100622/1277229166
-        try {
-            JSONArray items = json.getJSONArray("items");
-
-            int nItems = items.length();
-            JSONObject[] entriesObject = new JSONObject[nItems];
-
-            for (int i = 0; i < nItems; i += 1) {
-                entriesObject[i] = items.getJSONObject(i);
-            }
-
-            for (int i = 0; i < nItems; i += 1) {
-                String title = entriesObject[i].getString("title");
-                Log.i("API Response", title);
-            }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
         // Test: Authentication
         HashMap<String, String> authParams = new HashMap<String, String>();
@@ -67,21 +41,23 @@ public class EntryLoader extends AsyncTaskLoader<Entries> {
         authParams.put("remember", "1");
         api.authentication(authParams);
 
-        // Test: 認証を必要とするアクセスの試験
-        HashMap<String, String> getDraftParams = new HashMap<String, String>();
-        getDraftParams.put("status", "1");
-        JSONObject draftEntries = api.listEntries(1, getDraftParams);
-        Log.i("API Response", String.valueOf(draftEntries));
+        // Test: 1記事の作成
+//        HashMap<String, String> createParams = new HashMap<String, String>();
+//        createParams.put("title", "JavaSDKからの投稿テスト");
+//        createParams.put("body", "JavaSDKからの投稿テストです。ただ今SDKを開発中です。");
+//        createParams.put("status", "Publish");
+//        JSONObject createEntry = api.createEntry(3, createParams);
+//        Log.i("API Response", String.valueOf(createEntry));
 
-        // Test: 検索
-        HashMap<String, String> searchParams = new HashMap<String, String>();
-        searchParams.put("search", "夏祭り");
-        JSONObject searchEntries = api.search(searchParams);
-        Log.i("API Response", String.valueOf(searchEntries));
+        // Test: 1記事の編集
+//        HashMap<String, String> createParams = new HashMap<String, String>();
+//        createParams.put("status", "Draft");
+//        JSONObject createEntry = api.updateEntry(3, 859, createParams);
+//        Log.i("API Response", String.valueOf(createEntry));
 
-        // Test: カテゴリに属する記事
-        JSONObject categoryEntries = api.listEntriesForCategory(1, 20, null);
-        Log.i("API Response", String.valueOf(categoryEntries));
+        // Test: 1記事の削除
+//        JSONObject createEntry = api.deleteEntry(3, 859);
+//        Log.i("API Response", String.valueOf(createEntry));
 
         return null;
     }

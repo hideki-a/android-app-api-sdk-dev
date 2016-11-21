@@ -27,6 +27,9 @@ package pw.anothersky.movabletype.apisdk;
 
 import android.util.Log;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -134,6 +137,30 @@ public class DataApi extends JSONObject {
                 }
 
                 break;
+
+            case "PUT":
+                buildedRequest = request.url(url).put(formBody).build();
+
+                try {
+                    Response response = client.newCall(buildedRequest).execute();
+                    return response.body().string();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                break;
+
+            case "DELETE":
+                buildedRequest = request.url(url).delete().build();
+
+                try {
+                    Response response = client.newCall(buildedRequest).execute();
+                    return response.body().string();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+
+                break;
         }
 
         return null;
@@ -149,6 +176,11 @@ public class DataApi extends JSONObject {
         }
 
         return null;
+    }
+
+    private String convertJSON(HashMap<String, String> params) throws JsonProcessingException {
+        ObjectMapper mapper = new ObjectMapper();
+        return mapper.writeValueAsString(params);
     }
 
     private void authenticationCommon(String url, HashMap<String, String> params) {
@@ -185,6 +217,40 @@ public class DataApi extends JSONObject {
         return buildJSON(responseBody);
     }
 
+    private JSONObject entryAction(String method, int siteId, int entryId, HashMap<String, String> params) {
+        String url = this.apiUrl() + "/sites/" + siteId + "/entries";
+        String responseBody = null;
+
+        if (entryId != -1) {
+            url = url + "/" + entryId;
+        }
+
+        if ("GET" == method) {
+            String paramStr = this.parseParams(params);
+            url = url + paramStr;
+            responseBody = sendRequest(method, url, null, false);
+        } else {
+            String json = null;
+
+            if (params != null) {
+                try {
+                    json = this.convertJSON(params);
+                    HashMap<String, String> requestBody = new HashMap<String, String>();
+                    requestBody.put("entry", json);
+
+                    RequestBody formBody = this.parsePostParams(requestBody);
+                    responseBody = sendRequest(method, url, formBody, false);
+                } catch (JsonProcessingException e) {
+                    e.printStackTrace();
+                }
+            } else {
+                responseBody = sendRequest(method, url, null, false);
+            }
+        }
+
+        return buildJSON(responseBody);
+    }
+
     /** サイトの一覧を取得します。 */
     public JSONObject listSites() {
         String url = this.apiUrl() + "/sites";
@@ -196,6 +262,52 @@ public class DataApi extends JSONObject {
         String paramStr = this.parseParams(params);
         String url = this.apiUrl() + "/sites/" + siteId + "/entries" + paramStr;
         return this.fetchList(url);
+    }
+
+    /**
+     * 指定したIDの記事を取得します。
+     *
+     * @param siteId ブログID
+     * @param entryId 記事ID
+     * @param params 取得内容の設定（フィールド設定）
+     * @return JSONObject APIのResponseBody
+     */
+    public JSONObject getEntry(int siteId, int entryId, HashMap<String, String> params) {
+        return this.entryAction("GET", siteId, entryId, params);
+    }
+
+    /**
+     * 新規記事を作成します。
+     *
+     * @param siteId ブログID
+     * @param params 記事データ
+     * @return JSONObject APIのResponseBody
+     */
+    public JSONObject createEntry(int siteId, HashMap<String, String> params) {
+        return this.entryAction("POST", siteId, -1, params);
+    }
+
+    /**
+     * 指定したIDの記事を編集します。
+     *
+     * @param siteId ブログID
+     * @param entryId 記事ID
+     * @param params 記事データ
+     * @return JSONObject APIのResponseBody
+     */
+    public JSONObject updateEntry(int siteId, int entryId, HashMap<String, String> params) {
+        return this.entryAction("PUT", siteId, entryId, params);
+    }
+
+    /**
+     * 指定したIDの記事を削除します。
+     *
+     * @param siteId ブログID
+     * @param entryId 記事ID
+     * @return JSONObject APIのResponseBody
+     */
+    public JSONObject deleteEntry(int siteId, int entryId) {
+        return this.entryAction("DELETE", siteId, entryId, null);
     }
 
     /** カテゴリの一覧を取得します。 */
