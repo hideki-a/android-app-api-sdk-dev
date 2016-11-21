@@ -56,8 +56,11 @@ public class DataApi extends JSONObject {
         OPTIONS
     }
 
+    /** DataAPIエンドポイントのバージョン */
     public String endpointVersion = "v3";
+    /** DataAPIエンドポイントのURL */
     public String apiBaseUrl = "http://localhost/cgi-bin/MT-6.1/mt-data-api.cgi";
+    /** DataAPI利用時のクライアントID */
     public String clientId = "MTDataAPIJavaClient";
 
     public static final DataApi sharedInstance = new DataApi();
