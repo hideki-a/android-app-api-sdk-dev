@@ -47,6 +47,15 @@ import okhttp3.Response;
  * Movable Type DataAPIにアクセスするためのクラスです。
  */
 public class DataApi extends JSONObject {
+    private enum HttpMethod {
+        GET,
+        POST,
+        PUT,
+        DELETE,
+        HEAD,
+        OPTIONS
+    }
+
     public String endpointVersion = "v3";
     public String apiBaseUrl = "http://localhost/cgi-bin/MT-6.1/mt-data-api.cgi";
     public String clientId = "MTDataAPIJavaClient";
@@ -98,7 +107,7 @@ public class DataApi extends JSONObject {
         return null;
     }
 
-    private String sendRequest(String method, String url, RequestBody formBody, boolean useSession) {
+    private String sendRequest(HttpMethod method, String url, RequestBody formBody, boolean useSession) {
         OkHttpClient client = new OkHttpClient();
         Request.Builder request = new Request.Builder();
         Request buildedRequest = null;
@@ -114,7 +123,7 @@ public class DataApi extends JSONObject {
         }
 
         switch (method) {
-            case "GET":
+            case GET:
                 buildedRequest = request.url(url).build();
 
                 try {
@@ -126,7 +135,7 @@ public class DataApi extends JSONObject {
 
                 break;
 
-            case "POST":
+            case POST:
                 buildedRequest = request.url(url).post(formBody).build();
 
                 try {
@@ -138,7 +147,7 @@ public class DataApi extends JSONObject {
 
                 break;
 
-            case "PUT":
+            case PUT:
                 buildedRequest = request.url(url).put(formBody).build();
 
                 try {
@@ -150,7 +159,7 @@ public class DataApi extends JSONObject {
 
                 break;
 
-            case "DELETE":
+            case DELETE:
                 buildedRequest = request.url(url).delete().build();
 
                 try {
@@ -185,7 +194,7 @@ public class DataApi extends JSONObject {
 
     private void authenticationCommon(String url, HashMap<String, String> params) {
         RequestBody formBody = this.parsePostParams(params);
-        String responseBody = sendRequest("POST", url, formBody, false);
+        String responseBody = sendRequest(HttpMethod.POST, url, formBody, false);
         JSONObject json = buildJSON(responseBody);
 
         try {
@@ -213,11 +222,11 @@ public class DataApi extends JSONObject {
     }
 
     private JSONObject fetchList(String url) {
-        String responseBody = sendRequest("GET", url, null, false);
+        String responseBody = sendRequest(HttpMethod.GET, url, null, false);
         return buildJSON(responseBody);
     }
 
-    private JSONObject entryAction(String method, int siteId, int entryId, HashMap<String, String> params) {
+    private JSONObject entryAction(HttpMethod method, int siteId, int entryId, HashMap<String, String> params) {
         String url = this.apiUrl() + "/sites/" + siteId + "/entries";
         String responseBody = null;
 
@@ -225,7 +234,7 @@ public class DataApi extends JSONObject {
             url = url + "/" + entryId;
         }
 
-        if ("GET" == method) {
+        if (HttpMethod.GET == method) {
             String paramStr = this.parseParams(params);
             url = url + paramStr;
             responseBody = sendRequest(method, url, null, false);
@@ -273,7 +282,7 @@ public class DataApi extends JSONObject {
      * @return JSONObject APIのResponseBody
      */
     public JSONObject getEntry(int siteId, int entryId, HashMap<String, String> params) {
-        return this.entryAction("GET", siteId, entryId, params);
+        return this.entryAction(HttpMethod.GET, siteId, entryId, params);
     }
 
     /**
@@ -284,7 +293,7 @@ public class DataApi extends JSONObject {
      * @return JSONObject APIのResponseBody
      */
     public JSONObject createEntry(int siteId, HashMap<String, String> params) {
-        return this.entryAction("POST", siteId, -1, params);
+        return this.entryAction(HttpMethod.POST, siteId, -1, params);
     }
 
     /**
@@ -296,7 +305,7 @@ public class DataApi extends JSONObject {
      * @return JSONObject APIのResponseBody
      */
     public JSONObject updateEntry(int siteId, int entryId, HashMap<String, String> params) {
-        return this.entryAction("PUT", siteId, entryId, params);
+        return this.entryAction(HttpMethod.PUT, siteId, entryId, params);
     }
 
     /**
@@ -307,7 +316,7 @@ public class DataApi extends JSONObject {
      * @return JSONObject APIのResponseBody
      */
     public JSONObject deleteEntry(int siteId, int entryId) {
-        return this.entryAction("DELETE", siteId, entryId, null);
+        return this.entryAction(HttpMethod.DELETE, siteId, entryId, null);
     }
 
     /** カテゴリの一覧を取得します。 */
@@ -320,7 +329,7 @@ public class DataApi extends JSONObject {
     private JSONObject listEntriesForObject(String objectName, int objectId, int siteId, String paramStr) {
         String url = this.apiUrl() + "/sites/" + siteId + "/"
                 + objectName + "/" + objectId + "/entries" + paramStr;
-        String responseBody = sendRequest("GET", url, null, false);
+        String responseBody = sendRequest(HttpMethod.GET, url, null, false);
         return buildJSON(responseBody);
     }
 

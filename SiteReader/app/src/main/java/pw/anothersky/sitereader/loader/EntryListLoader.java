@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import pw.anothersky.sitereader.R;
@@ -33,6 +34,34 @@ public class EntryListLoader extends AsyncTaskLoader<List<Entry>> {
 
         DataApi api = DataApi.sharedInstance;
         api.apiBaseUrl = mContext.getString(R.string.development);
+
+        // -- Test --------------------------------------
+        // Test: Authentication
+        HashMap<String, String> authParams = new HashMap<String, String>();
+        authParams.put("username", mContext.getString(R.string.development_mt_username));
+        authParams.put("password", mContext.getString(R.string.development_mt_password));
+        authParams.put("remember", "1");
+        api.authentication(authParams);
+
+        // Test: 1記事の作成
+        HashMap<String, String> createParams = new HashMap<String, String>();
+        createParams.put("title", "JavaSDKからの投稿テスト2");
+        createParams.put("body", "JavaSDKからの投稿テストです。ただ今SDKを開発中です。\nEnumを利用するようにしました。");
+        createParams.put("status", "Publish");
+        JSONObject createEntry = api.createEntry(3, createParams);
+        Log.i("API Response", String.valueOf(createEntry));
+
+        // Test: 1記事の編集
+//        HashMap<String, String> createParams = new HashMap<String, String>();
+//        createParams.put("status", "Draft");
+//        JSONObject createEntry = api.updateEntry(3, 859, createParams);
+//        Log.i("API Response", String.valueOf(createEntry));
+
+        // Test: 1記事の削除
+//        JSONObject createEntry = api.deleteEntry(3, 859);
+//        Log.i("API Response", String.valueOf(createEntry));
+        // ----------------------------------------------
+
         JSONObject json = api.listEntries(1, null);
 
         try {
