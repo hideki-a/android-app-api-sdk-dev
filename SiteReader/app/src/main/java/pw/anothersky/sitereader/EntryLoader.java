@@ -18,21 +18,17 @@ import pw.anothersky.sitereader.data.Entries;
  */
 
 public class EntryLoader extends AsyncTaskLoader<Entries> {
-    private String apiUrl;
-    private String apiUsername;
-    private String apiPassword;
+    private static Context mContext;
 
-    public EntryLoader(Context context, String apiUrl, String apiUsername, String apiPassword) {
+    public EntryLoader(Context context) {
         super(context);
-        this.apiUrl = apiUrl;
-        this.apiUsername = apiUsername;
-        this.apiPassword = apiPassword;
+        mContext = context;
     }
 
     @Override
     public Entries loadInBackground() {
         DataApi api = DataApi.sharedInstance;
-        api.apiBaseUrl = this.apiUrl;
+        api.apiBaseUrl = mContext.getString(R.string.development);
         HashMap<String, String> params = new HashMap<String, String>();
         params.put("limit", "5");
         params.put("search", "アクセシビリティ");
@@ -66,8 +62,8 @@ public class EntryLoader extends AsyncTaskLoader<Entries> {
 
         // Test: Authentication
         HashMap<String, String> authParams = new HashMap<String, String>();
-        authParams.put("username", this.apiUsername);
-        authParams.put("password", this.apiPassword);
+        authParams.put("username", mContext.getString(R.string.development_mt_username));
+        authParams.put("password", mContext.getString(R.string.development_mt_password));
         authParams.put("remember", "1");
         api.authentication(authParams);
 
