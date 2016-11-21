@@ -204,4 +204,36 @@ public class DataApi extends JSONObject {
         String url = this.apiUrl() + "/sites/" + siteId + "/categories" + paramStr;
         return this.fetchList(url);
     }
+
+    private JSONObject listEntriesForObject(String objectName, int objectId, int siteId, String paramStr) {
+        String url = this.apiUrl() + "/sites/" + siteId + "/"
+                + objectName + "/" + objectId + "/entries" + paramStr;
+        String responseBody = sendRequest("GET", url, null, false);
+        return buildJSON(responseBody);
+    }
+
+    /**
+     * 指定カテゴリに属する記事を取得します。
+     *
+     * @param params ブログID
+     * @param params カテゴリID
+     * @param params 抽出条件
+     * @return JSONObject APIのResponseBody
+     */
+    public JSONObject listEntriesForCategory(int siteId, int categoryId, HashMap<String, String> params) {
+        String paramStr = this.parseParams(params);
+        return this.listEntriesForObject("categories", categoryId, siteId, paramStr);
+    }
+
+    /**
+     * 検索結果を取得します。
+     *
+     * @param params 検索条件
+     * @return JSONObject APIのResponseBody
+     */
+    public JSONObject search(HashMap<String, String> params) {
+        String paramStr = this.parseParams(params);
+        String url = this.apiUrl() + "/search" + paramStr;
+        return this.fetchList(url);
+    }
 }

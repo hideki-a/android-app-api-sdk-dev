@@ -77,6 +77,16 @@ public class EntryLoader extends AsyncTaskLoader<Entries> {
         JSONObject draftEntries = api.listEntries(1, getDraftParams);
         Log.i("API Response", String.valueOf(draftEntries));
 
+        // Test: 検索
+        HashMap<String, String> searchParams = new HashMap<String, String>();
+        searchParams.put("search", "夏祭り");
+        JSONObject searchEntries = api.search(searchParams);
+        Log.i("API Response", String.valueOf(searchEntries));
+
+        // Test: カテゴリに属する記事
+        JSONObject categoryEntries = api.listEntriesForCategory(1, 20, null);
+        Log.i("API Response", String.valueOf(categoryEntries));
+
         return null;
     }
 }
