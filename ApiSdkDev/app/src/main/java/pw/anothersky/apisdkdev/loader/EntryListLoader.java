@@ -38,19 +38,19 @@ public class EntryListLoader extends AsyncTaskLoader<List<Entry>> {
 
         // -- Test --------------------------------------
         // Test: Authentication
-        HashMap<String, String> authParams = new HashMap<String, String>();
-        authParams.put("username", mContext.getString(R.string.development_mt_username));
-        authParams.put("password", mContext.getString(R.string.development_mt_password));
-        authParams.put("remember", "1");
-        api.authentication(authParams);
+//        HashMap<String, String> authParams = new HashMap<String, String>();
+//        authParams.put("username", mContext.getString(R.string.development_mt_username));
+//        authParams.put("password", mContext.getString(R.string.development_mt_password));
+//        authParams.put("remember", "1");
+//        api.authentication(authParams, null);
 
         // Test: 1記事の作成
-        HashMap<String, String> createParams = new HashMap<String, String>();
-        createParams.put("title", "JavaSDKからの投稿テスト2");
-        createParams.put("body", "JavaSDKからの投稿テストです。ただ今SDKを開発中です。\nEnumを利用するようにしました。");
-        createParams.put("status", "Publish");
-        JSONObject createEntry = api.createEntry(3, createParams);
-        Log.i("API Response", String.valueOf(createEntry));
+//        HashMap<String, String> createParams = new HashMap<String, String>();
+//        createParams.put("title", "JavaSDKからの投稿テスト2");
+//        createParams.put("body", "JavaSDKからの投稿テストです。ただ今SDKを開発中です。\nEnumを利用するようにしました。");
+//        createParams.put("status", "Publish");
+//        JSONObject createEntry = api.createEntry(3, createParams, null);
+//        Log.i("API Response", String.valueOf(createEntry));
 
         // Test: 1記事の編集
 //        HashMap<String, String> createParams = new HashMap<String, String>();
@@ -63,7 +63,7 @@ public class EntryListLoader extends AsyncTaskLoader<List<Entry>> {
 //        Log.i("API Response", String.valueOf(createEntry));
         // ----------------------------------------------
 
-        JSONObject json = api.listEntries(1, null);
+        JSONObject json = api.listEntries(1, null, null);
 
         try {
             JSONArray items = json.getJSONArray("items");

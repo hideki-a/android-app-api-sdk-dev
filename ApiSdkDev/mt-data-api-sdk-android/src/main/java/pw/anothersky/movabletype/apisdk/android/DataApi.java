@@ -37,6 +37,7 @@ import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
 
+import okhttp3.Call;
 import okhttp3.FormBody;
 import okhttp3.OkHttpClient;
 import okhttp3.Request;
@@ -64,6 +65,10 @@ public class DataApi extends JSONObject {
     public String clientId = "MTDataAPIJavaClient";
 
     public static final DataApi sharedInstance = new DataApi();
+
+    public interface Callback {
+        public void onResponse(JSONObject json);
+    }
 
     private String token = "";
     private String sessionId = "";
@@ -178,6 +183,57 @@ public class DataApi extends JSONObject {
         return null;
     }
 
+    private void sendRequestWithCb(HttpMethod method, String url, RequestBody formBody, boolean useSession, final Callback callback) {
+        OkHttpClient client = new OkHttpClient();
+        Request.Builder request = new Request.Builder();
+        Request buildedRequest = null;
+
+        if (this.token != "") {
+            request.addHeader("X-MT-Authorization", "MTAuth accessToken=" + this.token);
+        }
+
+        if (useSession) {
+            if (this.sessionId != "") {
+                request.addHeader("X-MT-Authorization", "MTAuth sessionId" + this.sessionId);
+            }
+        }
+
+        switch (method) {
+            case GET:
+                buildedRequest = request.url(url).build();
+                break;
+
+            case POST:
+                buildedRequest = request.url(url).post(formBody).build();
+                break;
+
+            case PUT:
+                buildedRequest = request.url(url).put(formBody).build();
+                break;
+
+            case DELETE:
+                buildedRequest = request.url(url).delete().build();
+                break;
+        }
+
+        client.newCall(buildedRequest).enqueue(new okhttp3.Callback() {
+            @Override
+            public void onFailure(Call call, IOException e) {
+                e.printStackTrace();
+            }
+
+            @Override
+            public void onResponse(Call call, Response response) throws IOException {
+                String responseBody = response.body().string();
+                try {
+                    callback.onResponse(new JSONObject(responseBody));
+                } catch (JSONException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+    }
+
     private JSONObject buildJSON(String responseBody) {
         if (responseBody != null) {
             try {
@@ -195,42 +251,71 @@ public class DataApi extends JSONObject {
         return mapper.writeValueAsString(params);
     }
 
-    private void authenticationCommon(String url, HashMap<String, String> params) {
+    private void authenticationCommon(String url, HashMap<String, String> params, final Callback callback) {
         RequestBody formBody = this.parsePostParams(params);
-        String responseBody = sendRequest(HttpMethod.POST, url, formBody, false);
-        JSONObject json = buildJSON(responseBody);
 
-        try {
-            if (json.has("accessToken")) {
-                this.token = json.getString("accessToken");
-                this.sessionId = json.getString("sessionId");
+        if (callback != null) {
+            sendRequestWithCb(HttpMethod.POST, url, formBody, false, new Callback() {
+                @Override
+                public void onResponse(JSONObject json) {
+                    try {
+                        if (json.has("accessToken")) {
+                            token = json.getString("accessToken");
+                            sessionId = json.getString("sessionId");
+                        }
+                    } catch (JSONException e) {
+                        e.printStackTrace();
+                    }
+
+                    Log.i("DataApi Debug", String.valueOf(json));
+                    callback.onResponse(json);
+                }
+            });
+        } else {
+            String responseBody = sendRequest(HttpMethod.POST, url, formBody, false);
+            JSONObject json = buildJSON(responseBody);
+
+            try {
+                if (json.has("accessToken")) {
+                    this.token = json.getString("accessToken");
+                    this.sessionId = json.getString("sessionId");
+                }
+            } catch (JSONException e) {
+                e.printStackTrace();
             }
-        } catch (JSONException e) {
-            e.printStackTrace();
-        }
 
-        Log.i("DataApi Debug", String.valueOf(json));
+            Log.i("DataApi Debug", String.valueOf(json));
+        }
     }
 
     /** 新しいセッションを確立し、アクセストークンを取得します。 */
-    public void authentication(HashMap<String, String> params) {
+    public void authentication(HashMap<String, String> params, final Callback callback) {
         String url = this.apiUrl() + "/authentication";
-        this.authenticationCommon(url, params);
+        this.authenticationCommon(url, params, callback);
     }
 
     /** エンドポイントバージョン2で新しいセッションを確立し、アクセストークンを取得します。 */
-    public void authenticationV2(HashMap<String, String> params) {
+    public void authenticationV2(HashMap<String, String> params, final Callback callback) {
         String url = this.apiurlV2() + "/authentication";
-        this.authenticationCommon(url, params);
+        this.authenticationCommon(url, params, callback);
     }
 
-    private JSONObject fetchList(String url) {
-        String responseBody = sendRequest(HttpMethod.GET, url, null, false);
-        return buildJSON(responseBody);
+    private JSONObject fetchList(String url, final Callback callback) {
+        if (callback != null) {
+            sendRequestWithCb(HttpMethod.GET, url, null, false, callback);
+            return null;
+        } else {
+            String responseBody = sendRequest(HttpMethod.GET, url, null, false);
+            return buildJSON(responseBody);
+        }
     }
 
-    private JSONObject entryAction(HttpMethod method, int siteId, int entryId, HashMap<String, String> params) {
+    private JSONObject entryAction(HttpMethod method, int siteId, int entryId, HashMap<String, String> params, final Callback callback) {
         String url = this.apiUrl() + "/sites/" + siteId + "/entries";
+        String paramStr = null;
+        String json = null;
+        HashMap<String, String> requestBody = new HashMap<String, String>();
+        RequestBody formBody = null;
         String responseBody = null;
 
         if (entryId != -1) {
@@ -238,42 +323,58 @@ public class DataApi extends JSONObject {
         }
 
         if (HttpMethod.GET == method) {
-            String paramStr = this.parseParams(params);
+            paramStr = this.parseParams(params);
             url = url + paramStr;
-            responseBody = sendRequest(method, url, null, false);
         } else {
-            String json = null;
-
             if (params != null) {
                 try {
                     json = this.convertJSON(params);
-                    HashMap<String, String> requestBody = new HashMap<String, String>();
                     requestBody.put("entry", json);
-
-                    RequestBody formBody = this.parsePostParams(requestBody);
-                    responseBody = sendRequest(method, url, formBody, false);
+                    formBody = this.parsePostParams(requestBody);
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
                 }
-            } else {
-                responseBody = sendRequest(method, url, null, false);
             }
         }
 
-        return buildJSON(responseBody);
+        if (callback != null) {
+            if (HttpMethod.GET == method) {
+                sendRequestWithCb(method, url, null, false, callback);
+            } else {
+                if (params != null) {                     
+                    sendRequestWithCb(method, url, formBody, false, callback);
+                } else {
+                    sendRequestWithCb(method, url, null, false, callback);
+                }
+            }
+
+            return null;
+        } else {
+            if (HttpMethod.GET == method) {
+                responseBody = sendRequest(method, url, null, false);
+            } else {
+                if (params != null) {
+                    responseBody = sendRequest(method, url, formBody, false);
+                } else {
+                    responseBody = sendRequest(method, url, null, false);
+                }
+            }
+
+            return buildJSON(responseBody);
+        }
     }
 
     /** サイトの一覧を取得します。 */
-    public JSONObject listSites() {
+    public JSONObject listSites(final Callback callback) {
         String url = this.apiUrl() + "/sites";
-        return this.fetchList(url);
+        return this.fetchList(url, callback);
     }
 
     /** ブログ記事の一覧を取得します。 */
-    public JSONObject listEntries(int siteId, HashMap<String, String> params) {
+    public JSONObject listEntries(int siteId, HashMap<String, String> params, final Callback callback) {
         String paramStr = this.parseParams(params);
         String url = this.apiUrl() + "/sites/" + siteId + "/entries" + paramStr;
-        return this.fetchList(url);
+        return this.fetchList(url, callback);
     }
 
     /**
@@ -284,8 +385,8 @@ public class DataApi extends JSONObject {
      * @param params 取得内容の設定（フィールド設定）
      * @return JSONObject APIのResponseBody
      */
-    public JSONObject getEntry(int siteId, int entryId, HashMap<String, String> params) {
-        return this.entryAction(HttpMethod.GET, siteId, entryId, params);
+    public JSONObject getEntry(int siteId, int entryId, HashMap<String, String> params, final Callback callback) {
+        return this.entryAction(HttpMethod.GET, siteId, entryId, params, callback);
     }
 
     /**
@@ -295,8 +396,8 @@ public class DataApi extends JSONObject {
      * @param params 記事データ
      * @return JSONObject APIのResponseBody
      */
-    public JSONObject createEntry(int siteId, HashMap<String, String> params) {
-        return this.entryAction(HttpMethod.POST, siteId, -1, params);
+    public JSONObject createEntry(int siteId, HashMap<String, String> params, final Callback callback) {
+        return this.entryAction(HttpMethod.POST, siteId, -1, params, callback);
     }
 
     /**
@@ -307,8 +408,8 @@ public class DataApi extends JSONObject {
      * @param params 記事データ
      * @return JSONObject APIのResponseBody
      */
-    public JSONObject updateEntry(int siteId, int entryId, HashMap<String, String> params) {
-        return this.entryAction(HttpMethod.PUT, siteId, entryId, params);
+    public JSONObject updateEntry(int siteId, int entryId, HashMap<String, String> params, final Callback callback) {
+        return this.entryAction(HttpMethod.PUT, siteId, entryId, params, callback);
     }
 
     /**
@@ -318,22 +419,28 @@ public class DataApi extends JSONObject {
      * @param entryId 記事ID
      * @return JSONObject APIのResponseBody
      */
-    public JSONObject deleteEntry(int siteId, int entryId) {
-        return this.entryAction(HttpMethod.DELETE, siteId, entryId, null);
+    public JSONObject deleteEntry(int siteId, int entryId, final Callback callback) {
+        return this.entryAction(HttpMethod.DELETE, siteId, entryId, null, callback);
     }
 
     /** カテゴリの一覧を取得します。 */
-    public JSONObject listCategories(int siteId, HashMap<String, String> params) {
+    public JSONObject listCategories(int siteId, HashMap<String, String> params, final Callback callback) {
         String paramStr = this.parseParams(params);
         String url = this.apiUrl() + "/sites/" + siteId + "/categories" + paramStr;
-        return this.fetchList(url);
+        return this.fetchList(url, callback);
     }
 
-    private JSONObject listEntriesForObject(String objectName, int objectId, int siteId, String paramStr) {
+    private JSONObject listEntriesForObject(String objectName, int objectId, int siteId, String paramStr, final Callback callback) {
         String url = this.apiUrl() + "/sites/" + siteId + "/"
                 + objectName + "/" + objectId + "/entries" + paramStr;
-        String responseBody = sendRequest(HttpMethod.GET, url, null, false);
-        return buildJSON(responseBody);
+
+        if (callback != null) {
+            sendRequestWithCb(HttpMethod.GET, url, null, false, callback);
+            return null;
+        } else {
+            String responseBody = sendRequest(HttpMethod.GET, url, null, false);
+            return buildJSON(responseBody);
+        }
     }
 
     /**
@@ -344,9 +451,9 @@ public class DataApi extends JSONObject {
      * @param params 抽出条件
      * @return JSONObject APIのResponseBody
      */
-    public JSONObject listEntriesForCategory(int siteId, int categoryId, HashMap<String, String> params) {
+    public JSONObject listEntriesForCategory(int siteId, int categoryId, HashMap<String, String> params, final Callback callback) {
         String paramStr = this.parseParams(params);
-        return this.listEntriesForObject("categories", categoryId, siteId, paramStr);
+        return this.listEntriesForObject("categories", categoryId, siteId, paramStr, callback);
     }
 
     /**
@@ -355,9 +462,9 @@ public class DataApi extends JSONObject {
      * @param params 検索条件
      * @return JSONObject APIのResponseBody
      */
-    public JSONObject search(HashMap<String, String> params) {
+    public JSONObject search(HashMap<String, String> params, final Callback callback) {
         String paramStr = this.parseParams(params);
         String url = this.apiUrl() + "/search" + paramStr;
-        return this.fetchList(url);
+        return this.fetchList(url, callback);
     }
 }
