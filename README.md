@@ -1,12 +1,12 @@
-# SiteReader (for Android)
+# ApiSdkDev
 
-研究・開発中のアプリです。
+Movable Type Data API SDK for Androidの研究・開発用のアプリです。
 
 ## サーバーの定義
 
 ### 開発用
 
-`SiteReader/app/src/main/res/values/server.xml`にサーバーを定義してください。以下サンプルです。
+`ApiSdkDev/app/src/main/res/values/server.xml`にサーバーを定義してください。以下サンプルです。
 
 ```
 <?xml version="1.0" encoding="utf-8"?>
@@ -19,7 +19,7 @@
 
 ### Unit Test用
 
-`SiteReader/app/src/test/resources/server.txt`にサーバーを定義してください。以下サンプルです。
+`ApiSdkDev/mt-data-api-sdk-android/src/test/resourcesserver.txt`にサーバーを定義してください。以下サンプルです。
 
 ```
 https://192.168.1.20/mt/mt-data-api.cgi
