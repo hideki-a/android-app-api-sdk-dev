@@ -133,51 +133,26 @@ public class DataApi extends JSONObject {
         switch (method) {
             case GET:
                 buildedRequest = request.url(url).build();
-
-                try {
-                    Response response = client.newCall(buildedRequest).execute();
-                    return response.body().string();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
                 break;
 
             case POST:
                 buildedRequest = request.url(url).post(formBody).build();
-
-                try {
-                    Response response = client.newCall(buildedRequest).execute();
-                    return response.body().string();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
                 break;
 
             case PUT:
                 buildedRequest = request.url(url).put(formBody).build();
-
-                try {
-                    Response response = client.newCall(buildedRequest).execute();
-                    return response.body().string();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
                 break;
 
             case DELETE:
                 buildedRequest = request.url(url).delete().build();
-
-                try {
-                    Response response = client.newCall(buildedRequest).execute();
-                    return response.body().string();
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-
                 break;
+        }
+
+        try {
+            Response response = client.newCall(buildedRequest).execute();
+            return response.body().string();
+        } catch (IOException e) {
+            e.printStackTrace();
         }
 
         return null;
