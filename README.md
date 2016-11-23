@@ -10,31 +10,6 @@ Movable Type Data API SDK for Android（仮称）の研究・開発用のアプ�
 
 - [DataApiUnitTest](https://hideki-a.github.io/android-app-api-sdk-dev/ApiSdkDev/mt-data-api-sdk-android/build/reports/tests/release/classes/pw.anothersky.movabletype.apisdk.android.DataApiUnitTest.html)
 
-## サーバーの定義
-
-### 開発用
-
-`ApiSdkDev/app/src/main/res/values/server.xml`にサーバーを定義してください。以下サンプルです。
-
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<resources>
-    <string name="development">https://192.168.1.20/mt/mt-data-api.cgi</string>
-    <string name="development_mt_username">your-mt-username</string>
-    <string name="development_mt_password">your-mt-password</string>
-</resources>
-```
-
-### Unit Test用
-
-`ApiSdkDev/mt-data-api-sdk-android/src/test/resourcesserver.txt`にサーバーを定義してください。以下サンプルです。
-
-```txt
-https://192.168.1.20/mt/mt-data-api.cgi
-your-mt-username
-your-mt-password
-```
-
 ## サンプルコード例
 
 ### AsyncTaskなどで使用する場合
@@ -86,7 +61,7 @@ DataApi.Callback authCb = new DataApi.Callback() {
 api.authentication(authParams, authCb);
 ```
 
-## ドキュメント
+## Javadoc
 
 - [クラス DataApi](https://hideki-a.github.io/android-app-api-sdk-dev/docs/pw/anothersky/movabletype/apisdk/android/DataApi.html)
 - [インタフェース DataApi.Callback](https://hideki-a.github.io/android-app-api-sdk-dev/docs/pw/anothersky/movabletype/apisdk/android/DataApi.Callback.html)
@@ -131,4 +106,29 @@ repositories {
         dirs 'libs'
     }
 }
+```
+
+### サーバーの定義
+
+#### 開発用
+
+`ApiSdkDev/app/src/main/res/values/server.xml`にサーバーを定義してください。以下サンプルです。
+
+```xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="development">https://192.168.1.20/mt/mt-data-api.cgi</string>
+    <string name="development_mt_username">your-mt-username</string>
+    <string name="development_mt_password">your-mt-password</string>
+</resources>
+```
+
+#### Unit Test用
+
+`ApiSdkDev/mt-data-api-sdk-android/src/test/resourcesserver.txt`にサーバーを定義してください。以下サンプルです。
+
+```txt
+https://192.168.1.20/mt/mt-data-api.cgi
+your-mt-username
+your-mt-password
 ```
