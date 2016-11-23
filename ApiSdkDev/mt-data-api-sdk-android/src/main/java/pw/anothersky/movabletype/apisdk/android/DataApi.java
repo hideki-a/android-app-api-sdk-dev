@@ -47,7 +47,7 @@ import okhttp3.Response;
 /**
  * Movable Type DataAPIにアクセスするためのクラスです。
  */
-public class DataApi extends JSONObject {
+public class DataApi {
     private enum HttpMethod {
         GET,
         POST,
