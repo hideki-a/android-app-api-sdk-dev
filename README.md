@@ -1,6 +1,6 @@
 # ApiSdkDev
 
-Movable Type Data API SDK for Androidの研究・開発用のアプリです。
+Movable Type Data API SDK for Android（仮称）の研究・開発用のアプリです。
 
 ## サーバーの定義
 
@@ -82,3 +82,45 @@ api.authentication(authParams, authCb);
 
 - [クラス DataApi](https://hideki-a.github.io/android-app-api-sdk-dev/pw/anothersky/movabletype/apisdk/android/DataApi.html)
 - [インタフェース DataApi.Callback](https://hideki-a.github.io/android-app-api-sdk-dev/pw/anothersky/movabletype/apisdk/android/DataApi.Callback.html)
+
+## Movable Type Data API SDK for Android（仮称）の導入方法
+
+ライブラリをお試し頂く場合の方法です。現在手動導入のみ可能です。手動導入の場合は依存するライブラリも自分で記述していただく必要があります。
+
+1. `ApiSdkDev/mt-data-api-sdk-android/build/outputs/aar/mt-data-api-sdk-android-release.aar`をダウンロード
+2. 導入したいプロジェクトの`app/libs`に`mt-data-api-sdk-android-release.aar`をコピー
+3. `app/build.gradle`を編集しSync（サンプルを参照）
+
+### `app/build.gradle`サンプル
+
+```
+apply plugin: 'com.android.application'
+
+android {
+
+    // 省略
+
+    packagingOptions {
+        exclude 'META-INF/LICENSE'
+    }
+}
+
+dependencies {
+
+    // 省略
+
+    compile 'com.squareup.okhttp3:okhttp:3.4.2'
+    compile 'com.fasterxml.jackson.core:jackson-databind:2.8.4'
+    compile(name: 'mt-data-api-sdk-android-release', ext: 'aar')
+
+
+    // 省略
+
+}
+
+repositories {
+    flatDir {
+        dirs 'libs'
+    }
+}
+```
