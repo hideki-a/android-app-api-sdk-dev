@@ -8,6 +8,8 @@ Movable Type Data API SDK for Android（仮称）の研究・開発用のアプ�
 
 ## テスト結果
 
+`./gradlew :mt-data-api-sdk-android:testReleaseUnitTest`の実行結果です。
+
 - [DataApiUnitTest](https://hideki-a.github.io/android-app-api-sdk-dev/ApiSdkDev/mt-data-api-sdk-android/build/reports/tests/release/classes/pw.anothersky.movabletype.apisdk.android.DataApiUnitTest.html)
 
 ## サンプルコード例

@@ -46,6 +46,17 @@ public class DataApiUnitTest {
     }
 
     @Test
+    public void syncRequest() throws Exception {
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                JSONObject json = api.listEntries(1, null, null);
+                assertTrue(json.has("items"));
+            }
+        });
+    }
+
+    @Test
     public void listEntries() throws Exception {
         DataApi.Callback callback = new DataApi.Callback() {
             @Override
