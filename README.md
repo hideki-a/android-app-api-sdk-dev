@@ -2,6 +2,10 @@
 
 Movable Type Data API SDK for Android（仮称）の研究・開発用のアプリです。
 
+## ソースコード
+
+- [DataApi.java](/ApiSdkDev/mt-data-api-sdk-android/src/main/java/pw/anothersky/movabletype/apisdk/android/DataApi.java)
+
 ## サーバーの定義
 
 ### 開発用
