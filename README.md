@@ -6,6 +6,10 @@ Movable Type Data API SDK for Android（仮称）の研究・開発用のアプ�
 
 - [DataApi.java](/ApiSdkDev/mt-data-api-sdk-android/src/main/java/pw/anothersky/movabletype/apisdk/android/DataApi.java)
 
+## テスト結果
+
+- [DataApiUnitTest](https://hideki-a.github.io/android-app-api-sdk-dev/ApiSdkDev/mt-data-api-sdk-android/build/reports/tests/release/classes/pw.anothersky.movabletype.apisdk.android.DataApiUnitTest.html)
+
 ## サーバーの定義
 
 ### 開発用
@@ -84,8 +88,8 @@ api.authentication(authParams, authCb);
 
 ## ドキュメント
 
-- [クラス DataApi](https://hideki-a.github.io/android-app-api-sdk-dev/pw/anothersky/movabletype/apisdk/android/DataApi.html)
-- [インタフェース DataApi.Callback](https://hideki-a.github.io/android-app-api-sdk-dev/pw/anothersky/movabletype/apisdk/android/DataApi.Callback.html)
+- [クラス DataApi](https://hideki-a.github.io/android-app-api-sdk-dev/docs/pw/anothersky/movabletype/apisdk/android/DataApi.html)
+- [インタフェース DataApi.Callback](https://hideki-a.github.io/android-app-api-sdk-dev/docs/pw/anothersky/movabletype/apisdk/android/DataApi.Callback.html)
 
 ## Movable Type Data API SDK for Android（仮称）の導入方法
 

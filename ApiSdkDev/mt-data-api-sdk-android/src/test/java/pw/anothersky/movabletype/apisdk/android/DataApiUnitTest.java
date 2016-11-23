@@ -1,5 +1,8 @@
 package pw.anothersky.movabletype.apisdk.android;
 
+import android.util.Log;
+
+import org.json.JSONObject;
 import org.junit.BeforeClass;
 import org.junit.Test;
 
@@ -40,5 +43,16 @@ public class DataApiUnitTest {
     @Test
     public void apiURLTest() throws Exception {
         assertNotEquals("http://localhost/cgi-bin/MT-6.1/mt-data-api.cgi", this.api.apiBaseUrl);
+    }
+
+    @Test
+    public void listEntries() throws Exception {
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                assertTrue(json.has("items"));
+            }
+        };
+        api.listEntries(1, null, callback);
     }
 }

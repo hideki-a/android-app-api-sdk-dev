@@ -1,4 +1,6 @@
 /build/generated
 /build/intermediates
 /build/tmp
+/build/test-results
+/build/reports/tests/debug
 /build/outputs/aar/*-debug.aar
