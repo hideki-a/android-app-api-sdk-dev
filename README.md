@@ -8,7 +8,7 @@ Movable Type Data API SDK for Android（仮称）の研究・開発用のアプ�
 
 `ApiSdkDev/app/src/main/res/values/server.xml`にサーバーを定義してください。以下サンプルです。
 
-```
+```xml
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <string name="development">https://192.168.1.20/mt/mt-data-api.cgi</string>
@@ -21,7 +21,7 @@ Movable Type Data API SDK for Android（仮称）の研究・開発用のアプ�
 
 `ApiSdkDev/mt-data-api-sdk-android/src/test/resourcesserver.txt`にサーバーを定義してください。以下サンプルです。
 
-```
+```txt
 https://192.168.1.20/mt/mt-data-api.cgi
 your-mt-username
 your-mt-password
@@ -31,7 +31,7 @@ your-mt-password
 
 ### AsyncTaskなどで使用する場合
 
-```
+```java
 // Test: 記事の投稿
 HashMap<String, String> authParams = new HashMap<String, String>();
 authParams.put("username", mContext.getString(R.string.development_mt_username));
@@ -50,7 +50,7 @@ JSONObject createEntry = api.createEntry(3, createParams, null);
 
 MainActivityなどでは、以下の方法でDataAPIにアクセスが可能です。
 
-```
+```java
 // Test: 記事の投稿
 final DataApi api = DataApi.sharedInstance;
 api.apiBaseUrl = getString(R.string.development);
@@ -93,7 +93,7 @@ api.authentication(authParams, authCb);
 
 ### `app/build.gradle`サンプル
 
-```
+```txt
 apply plugin: 'com.android.application'
 
 android {

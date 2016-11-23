@@ -59,14 +59,20 @@ public class DataApi extends JSONObject {
 
     /** DataAPIエンドポイントのバージョン */
     public String endpointVersion = "v3";
-    /** DataAPIエンドポイントのURL */
-    public String apiBaseUrl = "http://localhost/cgi-bin/MT-6.1/mt-data-api.cgi";
+    /** mt-data-api.cgiまでのURL （例）http://localhost/cgi-bin/mt/mt-data-api.cgi */
+    public String apiBaseUrl = "http://localhost/cgi-bin/mt/mt-data-api.cgi";
     /** DataAPI利用時のクライアントID */
     public String clientId = "MTDataAPIJavaClient";
 
+    /** DataAPIのインスタンス */
     public static final DataApi sharedInstance = new DataApi();
 
     public interface Callback {
+        /**
+         * リクエスト成功時に実行するメソッド
+         *
+         * @param json APIからのレスポンス
+         */
         public void onResponse(JSONObject json);
     }
 
@@ -263,13 +269,23 @@ public class DataApi extends JSONObject {
         }
     }
 
-    /** 新しいセッションを確立し、アクセストークンを取得します。 */
+    /**
+     * 新しいセッションを確立し、アクセストークンを取得します。
+     *
+     * @param params 認証情報とclientId
+     * @param callback リクエスト成功時に実行するメソッド
+     */
     public void authentication(HashMap<String, String> params, final Callback callback) {
         String url = this.apiUrl() + "/authentication";
         this.authenticationCommon(url, params, callback);
     }
 
-    /** エンドポイントバージョン2で新しいセッションを確立し、アクセストークンを取得します。 */
+    /**
+     * エンドポイントバージョン2で新しいセッションを確立し、アクセストークンを取得します。
+     *
+     * @param params 認証情報とclientId
+     * @param callback リクエスト成功時に実行するメソッド
+     */
     public void authenticationV2(HashMap<String, String> params, final Callback callback) {
         String url = this.apiurlV2() + "/authentication";
         this.authenticationCommon(url, params, callback);
@@ -339,13 +355,25 @@ public class DataApi extends JSONObject {
         }
     }
 
-    /** サイトの一覧を取得します。 */
+    /**
+     * サイトの一覧を取得します。
+     *
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
     public JSONObject listSites(final Callback callback) {
         String url = this.apiUrl() + "/sites";
         return this.fetchList(url, callback);
     }
 
-    /** ブログ記事の一覧を取得します。 */
+    /**
+     * ブログ記事の一覧を取得します。
+     *
+     * @param siteId ブログID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
     public JSONObject listEntries(int siteId, HashMap<String, String> params, final Callback callback) {
         String paramStr = this.parseParams(params);
         String url = this.apiUrl() + "/sites/" + siteId + "/entries" + paramStr;
@@ -358,7 +386,8 @@ public class DataApi extends JSONObject {
      * @param siteId ブログID
      * @param entryId 記事ID
      * @param params 取得内容の設定（フィールド設定）
-     * @return JSONObject APIのResponseBody
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
      */
     public JSONObject getEntry(int siteId, int entryId, HashMap<String, String> params, final Callback callback) {
         return this.entryAction(HttpMethod.GET, siteId, entryId, params, callback);
@@ -369,7 +398,8 @@ public class DataApi extends JSONObject {
      *
      * @param siteId ブログID
      * @param params 記事データ
-     * @return JSONObject APIのResponseBody
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
      */
     public JSONObject createEntry(int siteId, HashMap<String, String> params, final Callback callback) {
         return this.entryAction(HttpMethod.POST, siteId, -1, params, callback);
@@ -381,7 +411,8 @@ public class DataApi extends JSONObject {
      * @param siteId ブログID
      * @param entryId 記事ID
      * @param params 記事データ
-     * @return JSONObject APIのResponseBody
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
      */
     public JSONObject updateEntry(int siteId, int entryId, HashMap<String, String> params, final Callback callback) {
         return this.entryAction(HttpMethod.PUT, siteId, entryId, params, callback);
@@ -392,13 +423,21 @@ public class DataApi extends JSONObject {
      *
      * @param siteId ブログID
      * @param entryId 記事ID
-     * @return JSONObject APIのResponseBody
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
      */
     public JSONObject deleteEntry(int siteId, int entryId, final Callback callback) {
         return this.entryAction(HttpMethod.DELETE, siteId, entryId, null, callback);
     }
 
-    /** カテゴリの一覧を取得します。 */
+    /**
+     * カテゴリの一覧を取得します。
+     *
+     * @param siteId ブログID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
     public JSONObject listCategories(int siteId, HashMap<String, String> params, final Callback callback) {
         String paramStr = this.parseParams(params);
         String url = this.apiUrl() + "/sites/" + siteId + "/categories" + paramStr;
@@ -421,10 +460,11 @@ public class DataApi extends JSONObject {
     /**
      * 指定カテゴリに属する記事を取得します。
      *
-     * @param params ブログID
-     * @param params カテゴリID
+     * @param siteId ブログID
+     * @param categoryId カテゴリID
      * @param params 抽出条件
-     * @return JSONObject APIのResponseBody
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
      */
     public JSONObject listEntriesForCategory(int siteId, int categoryId, HashMap<String, String> params, final Callback callback) {
         String paramStr = this.parseParams(params);
@@ -435,7 +475,8 @@ public class DataApi extends JSONObject {
      * 検索結果を取得します。
      *
      * @param params 検索条件
-     * @return JSONObject APIのResponseBody
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
      */
     public JSONObject search(HashMap<String, String> params, final Callback callback) {
         String paramStr = this.parseParams(params);
