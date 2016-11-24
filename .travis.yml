@@ -13,6 +13,7 @@ android:
     - platform-tools
     - build-tools-$ANDROID_BUILD_TOOLS
     - android-$ANDROID_API
+    - extra-android-support
   licenses:
     - android-sdk-preview-license-.+
     - android-sdk-license-.+
