@@ -1,4 +1,4 @@
-# ApiSdkDev
+# ApiSdkDev [![Build Status](https://travis-ci.org/hideki-a/android-app-api-sdk-dev.svg?branch=master)](https://travis-ci.org/hideki-a/android-app-api-sdk-dev)
 
 Movable Type Data API SDK for Android（仮称）の研究・開発用のアプリです。
 
