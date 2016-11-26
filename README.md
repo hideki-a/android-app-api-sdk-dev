@@ -70,11 +70,7 @@ api.authentication(authParams, authCb);
 
 ## Movable Type Data API SDK for Android（仮称）の導入方法
 
-ライブラリをお試し頂く場合の方法です。現在手動導入のみ可能です。手動導入の場合は依存するライブラリも自分で記述していただく必要があります。
-
-1. `ApiSdkDev/mt-data-api-sdk-android/build/outputs/aar/mt-data-api-sdk-android-release.aar`をダウンロード
-2. 導入したいプロジェクトの`app/libs`に`mt-data-api-sdk-android-release.aar`をコピー
-3. `app/build.gradle`を編集しSync（サンプルを参照）
+ライブラリをお試し頂く場合の方法です。`app/build.gradle`を編集しSyncすると利用可能になります。なお、バージョンは新しくなっている場合があります。repositoryディレクトリを参照してください。
 
 ### `app/build.gradle`サンプル
 
@@ -94,21 +90,23 @@ dependencies {
 
     // 省略
 
-    compile 'com.squareup.okhttp3:okhttp:3.4.2'
-    compile 'com.fasterxml.jackson.core:jackson-databind:2.8.4'
-    compile(name: 'mt-data-api-sdk-android-release', ext: 'aar')
-
+    compile 'pw.anothersky.movabletype.apisdk:mt-data-api-sdk-android:0.1.0'
 
     // 省略
 
 }
 
 repositories {
-    flatDir {
-        dirs 'libs'
+    maven {
+        url 'http://raw.github.com/hideki-a/android-app-api-sdk-dev/master/repository/'
     }
 }
 ```
+
+## 依存ライブラリ
+
+- [OkHttp](http://square.github.io/okhttp/)
+- [Jackson Databind](https://github.com/FasterXML/jackson-databind)
 
 ## サーバーの定義
 
@@ -123,7 +121,7 @@ repositories {
 <resources>
     <string name="development">https://192.168.1.20/mt/mt-data-api.cgi</string>
     <string name="development_mt_username">your-mt-username</string>
-    <string name="development_mt_password">your-mt-password</string>
+    <string name="development_mt_password">your-mt-webservice-password</string>
 </resources>
 ```
 
@@ -135,6 +133,7 @@ repositories {
 https://192.168.1.20/mt/mt-data-api.cgi
 your-mt-username
 your-mt-password
+your-mt-webservice-password
 ```
 
 ## その他
