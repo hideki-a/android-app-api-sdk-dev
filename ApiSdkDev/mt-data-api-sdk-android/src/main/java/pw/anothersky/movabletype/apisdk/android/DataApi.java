@@ -1,6 +1,5 @@
 /*
  * MIT License
- * http://choosealicense.com/licenses/mit/
  *
  * Copyright (c) 2016 Hideki Abe
  *
