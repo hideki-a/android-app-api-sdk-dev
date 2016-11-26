@@ -6,6 +6,14 @@ env:
   global:
     - ANDROID_API=24
     - ANDROID_BUILD_TOOLS=24.0.2
+    - GIT_COMMITTER_NAME='hideki-a@travis-ci'
+    - GIT_COMMITTER_EMAIL='hideki.abe.0630@gmail.com'
+    - GIT_AUTHOR_NAME='hideki-a@travis-ci'
+    - GIT_AUTHOR_EMAIL='hideki.abe.0630@gmail.com'
+
+branches:
+  only:
+    - develop
 
 android:
   components:
@@ -22,10 +30,22 @@ android:
 
 before_install:
   - openssl aes-256-cbc -K $encrypted_ae8e00e94dc9_key -iv $encrypted_ae8e00e94dc9_iv
-     -in ApiSdkDev/mt-data-api-sdk-android/src/test/resources/server.txt.enc -out ApiSdkDev/mt-data-api-sdk-android/src/test/resources/server.txt
+     -in .travis/secret.tar.enc -out .travis/secret.tar
      -d
+  - tar xvf .travis/secret.tar -C .travis
+  - mv .travis/.secret/server.txt ApiSdkDev/mt-data-api-sdk-android/src/test/resources/server.txt
+  - mv .travis/.secret/server.xml ApiSdkDev/app/src/main/res/values/server.xml
+  - mv .travis/.secret/travis_id_rsa ~/.ssh/id_rsa
   - mkdir "$ANDROID_HOME/licenses" || true
   - echo -e "\n8933bad161af4178b1185d1a37fbf41ea5269c55" > "$ANDROID_HOME/licenses/android-sdk-license"
   - echo -e "\n84831b9409646a918e30573bab4c9c91346d8abd" > "$ANDROID_HOME/licenses/android-sdk-preview-license"
 
-script: cd ApiSdkDev && ./gradlew :mt-data-api-sdk-android:testReleaseUnitTest
+script: 
+  - cd ApiSdkDev
+  - ./gradlew :mt-data-api-sdk-android:assembleRelease
+  - ./gradlew uploadArchives
+
+after_success: 
+  - cd $TRAVIS_BUILD_DIR
+  - chmod +x .travis/deploy.sh
+  - .travis/deploy.sh

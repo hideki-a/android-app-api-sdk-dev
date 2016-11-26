@@ -1,5 +1,6 @@
 /build/generated
 /build/intermediates
+/build/outputs
 /build/tmp
 /build/test-results
 /build/reports/tests/debug
