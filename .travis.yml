@@ -42,8 +42,10 @@ before_install:
 
 script: 
   - cd ApiSdkDev
+  - ./gradlew :mt-data-api-sdk-android:testReleaseUnitTest
   - ./gradlew :mt-data-api-sdk-android:assembleRelease
   - ./gradlew uploadArchives
+  - ./gradlew generateJavadoc
 
 after_success: 
   - cd $TRAVIS_BUILD_DIR
