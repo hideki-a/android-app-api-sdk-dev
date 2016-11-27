@@ -64,3 +64,26 @@ uploadArchives {
         }
     }
 }
+
+android.libraryVariants.all { variant ->
+
+    if (variant.name == "debug") {
+        return
+    }
+
+    task("generateJavadoc", type: Javadoc) {
+        title = "MT Data API SDK JavaDoc"
+        description "Generates Javadoc for Movable Type Data API SDK for Android."
+        source = variant.javaCompile.source
+        ext.androidJar =
+                "${android.sdkDirectory}/platforms/${android.compileSdkVersion}/android.jar"
+        destinationDir = file("../../docs")
+        classpath = files(variant.javaCompile.classpath.files) + files(ext.androidJar)
+        options.links("http://docs.oracle.com/javase/7/docs/api/");
+        options.links("http://d.android.com/reference/");
+        options.charSet("utf-8")
+        options.showFromPublic()
+        exclude '**/BuildConfig.java'
+        exclude '**/R.java'
+    }
+}
