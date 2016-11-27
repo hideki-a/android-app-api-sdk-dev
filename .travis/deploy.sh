@@ -7,5 +7,9 @@ cp -af docs android-app-api-sdk-dev
 cd android-app-api-sdk-dev
 git merge origin/develop --no-edit
 git add .
-git commit -m "Release by Travis CI Job $TRAVIS_JOB_NUMBER"
+git commit -F- <<EOM
+Release by Travis CI Job $TRAVIS_JOB_NUMBER
+
+https://travis-ci.org/hideki-a/android-app-api-sdk-dev/builds/$TRAVIS_BUILD_ID
+EOM
 git push origin master > /dev/null 2>&1
