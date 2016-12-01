@@ -300,13 +300,22 @@ public class DataApi {
         }
     }
 
-    private JSONObject entryAction(HttpMethod method, int siteId, int entryId, HashMap<String, String> params, final Callback callback) {
-        String url = this.apiUrl() + "/sites/" + siteId + "/entries";
+    private JSONObject entryAction(HttpMethod method, String entryClass, int siteId, int entryId, HashMap<String, String> params, final Callback callback) {
+        String url = this.apiUrl() + "/sites/" + siteId + "/";
         String paramStr = null;
         String json = null;
         HashMap<String, String> requestBody = new HashMap<String, String>();
         RequestBody formBody = null;
         String responseBody = null;
+
+        switch (entryClass) {
+            case "entry":
+                url = url + "entries";
+                break;
+            case "page":
+                url = url + "pages";
+                break;
+        }
 
         if (entryId != -1) {
             url = url + "/" + entryId;
@@ -319,7 +328,7 @@ public class DataApi {
             if (params != null) {
                 try {
                     json = this.convertJSON(params);
-                    requestBody.put("entry", json);
+                    requestBody.put(entryClass, json);
                     formBody = this.parsePostParams(requestBody);
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
@@ -389,7 +398,7 @@ public class DataApi {
      * @return JSONObject APIからのレスポンス
      */
     public JSONObject getEntry(int siteId, int entryId, HashMap<String, String> params, final Callback callback) {
-        return this.entryAction(HttpMethod.GET, siteId, entryId, params, callback);
+        return this.entryAction(HttpMethod.GET, "entry", siteId, entryId, params, callback);
     }
 
     /**
@@ -401,7 +410,7 @@ public class DataApi {
      * @return JSONObject APIからのレスポンス
      */
     public JSONObject createEntry(int siteId, HashMap<String, String> params, final Callback callback) {
-        return this.entryAction(HttpMethod.POST, siteId, -1, params, callback);
+        return this.entryAction(HttpMethod.POST, "entry", siteId, -1, params, callback);
     }
 
     /**
@@ -414,7 +423,7 @@ public class DataApi {
      * @return JSONObject APIからのレスポンス
      */
     public JSONObject updateEntry(int siteId, int entryId, HashMap<String, String> params, final Callback callback) {
-        return this.entryAction(HttpMethod.PUT, siteId, entryId, params, callback);
+        return this.entryAction(HttpMethod.PUT, "entry", siteId, entryId, params, callback);
     }
 
     /**
@@ -426,7 +435,71 @@ public class DataApi {
      * @return JSONObject APIからのレスポンス
      */
     public JSONObject deleteEntry(int siteId, int entryId, final Callback callback) {
-        return this.entryAction(HttpMethod.DELETE, siteId, entryId, null, callback);
+        return this.entryAction(HttpMethod.DELETE, "entry", siteId, entryId, null, callback);
+    }
+
+    /**
+     * ウェブページの一覧を取得します。
+     *
+     * @param siteId ブログID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listPages(int siteId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        String url = this.apiUrl() + "/sites/" + siteId + "/pages" + paramStr;
+        return this.fetchList(url, callback);
+    }
+
+    /**
+     * 指定したIDのウェブページを取得します。
+     *
+     * @param siteId ブログID
+     * @param pageId ウェブページID
+     * @param params 取得内容の設定（フィールド設定）
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject getPage(int siteId, int pageId, HashMap<String, String> params, final Callback callback) {
+        return this.entryAction(HttpMethod.GET, "page", siteId, pageId, params, callback);
+    }
+
+    /**
+     * 新規ウェブページを作成します。
+     *
+     * @param siteId ブログID
+     * @param params ウェブページデータ
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject createPage(int siteId, HashMap<String, String> params, final Callback callback) {
+        return this.entryAction(HttpMethod.POST, "page", siteId, -1, params, callback);
+    }
+
+    /**
+     * 指定したIDのウェブページを編集します。
+     *
+     * @param siteId ブログID
+     * @param pageId ウェブページID
+     * @param params 記事データ
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject updatePage(int siteId, int pageId, HashMap<String, String> params, final Callback callback) {
+        return this.entryAction(HttpMethod.PUT, "page", siteId, pageId, params, callback);
+    }
+
+    /**
+     * 指定したIDのウェブページを削除します。
+     *
+     * @param siteId ブログID
+     * @param pageId ウェブページID
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject deletePage(int siteId, int pageId, final Callback callback) {
+        return this.entryAction(HttpMethod.DELETE, "page", siteId, pageId, null, callback);
     }
 
     /**
@@ -443,9 +516,20 @@ public class DataApi {
         return this.fetchList(url, callback);
     }
 
-    private JSONObject listEntriesForObject(String objectName, int objectId, int siteId, String paramStr, final Callback callback) {
+    private JSONObject listEntriesForObject(String objectName, int objectId, String entryClass, int siteId, String paramStr, final Callback callback) {
         String url = this.apiUrl() + "/sites/" + siteId + "/"
-                + objectName + "/" + objectId + "/entries" + paramStr;
+                + objectName + "/" + objectId + "/";
+
+        switch (entryClass) {
+            case "entry":
+                url = url + "entries";
+                break;
+            case "page":
+                url = url + "pages";
+                break;
+        }
+
+        url = url + paramStr;
 
         if (callback != null) {
             sendRequestWithCb(HttpMethod.GET, url, null, false, callback);
@@ -467,7 +551,21 @@ public class DataApi {
      */
     public JSONObject listEntriesForCategory(int siteId, int categoryId, HashMap<String, String> params, final Callback callback) {
         String paramStr = this.parseParams(params);
-        return this.listEntriesForObject("categories", categoryId, siteId, paramStr, callback);
+        return this.listEntriesForObject("categories", categoryId, "entry", siteId, paramStr, callback);
+    }
+
+    /**
+     * 指定フォルダに属する記事を取得します。
+     *
+     * @param siteId ブログID
+     * @param folderId フォルダID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listPagesForFolder(int siteId, int folderId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        return this.listEntriesForObject("folders", folderId, "page", siteId, paramStr, callback);
     }
 
     /**
