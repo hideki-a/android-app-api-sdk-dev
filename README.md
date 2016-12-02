@@ -1,6 +1,6 @@
 # ApiSdkDev [![Build Status](https://travis-ci.org/hideki-a/android-app-api-sdk-dev.svg?branch=master)](https://travis-ci.org/hideki-a/android-app-api-sdk-dev)
 
-Movable Type Data API SDK for Android（仮称）の研究・開発用のアプリです。
+Movable Type Data API SDK for Android（仮称）の研究・開発用のアプリです。メソッドは今後追加していきます。現在利用できるメソッドは[Javadoc](#javadoc)を参照してください。
 
 ## ソースコード
 
@@ -70,7 +70,7 @@ api.authentication(authParams, authCb);
 
 ## Movable Type Data API SDK for Android（仮称）の導入方法
 
-ライブラリをお試し頂く場合の方法です。`app/build.gradle`を編集しSyncすると利用可能になります。なお、バージョンは新しくなっている場合があります。repositoryディレクトリを参照してください。
+ライブラリをお試し頂く場合の方法です。`app/build.gradle`を編集しSyncすると利用可能になります。
 
 ### `app/build.gradle`サンプル
 
@@ -90,7 +90,7 @@ dependencies {
 
     // 省略
 
-    compile 'pw.anothersky.movabletype.apisdk:mt-data-api-sdk-android:0.1.0'
+    compile 'pw.anothersky.movabletype.apisdk:mt-data-api-sdk-android:0.2.0'
 
     // 省略
 
