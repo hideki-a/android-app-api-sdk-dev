@@ -516,6 +516,51 @@ public class DataApi {
         return this.fetchList(url, callback);
     }
 
+    /**
+     * 親カテゴリを取得します。
+     *
+     * @param siteId ブログID
+     * @param categoryId カテゴリID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listParentCategories(int siteId, int categoryId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        String url = this.apiUrl() + "/sites/" + siteId + "/categories/" + categoryId + "/parents" + paramStr;
+        return this.fetchList(url, callback);
+    }
+
+    /**
+     * 兄弟カテゴリを取得します。
+     *
+     * @param siteId ブログID
+     * @param categoryId カテゴリID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listSiblingCategories(int siteId, int categoryId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        String url = this.apiUrl() + "/sites/" + siteId + "/categories/" + categoryId + "/siblings" + paramStr;
+        return this.fetchList(url, callback);
+    }
+
+    /**
+     * 子カテゴリを取得します。
+     *
+     * @param siteId ブログID
+     * @param categoryId カテゴリID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listChildCategories(int siteId, int categoryId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        String url = this.apiUrl() + "/sites/" + siteId + "/categories/" + categoryId + "/children" + paramStr;
+        return this.fetchList(url, callback);
+    }
+
     private JSONObject listEntriesForObject(String objectName, int objectId, String entryClass, int siteId, String paramStr, final Callback callback) {
         String url = this.apiUrl() + "/sites/" + siteId + "/"
                 + objectName + "/" + objectId + "/";

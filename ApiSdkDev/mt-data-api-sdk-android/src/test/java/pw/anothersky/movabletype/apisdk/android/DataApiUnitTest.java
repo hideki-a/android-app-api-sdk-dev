@@ -2,6 +2,7 @@ package pw.anothersky.movabletype.apisdk.android;
 
 import android.util.Log;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.junit.BeforeClass;
@@ -134,7 +135,7 @@ public class DataApiUnitTest {
                 int totalResults = 0;
                 try {
                     totalResults = json.getInt("totalResults");
-                    assertEquals(5, totalResults);
+                    assertEquals(8, totalResults);
                     finished.set(true);
                 } catch (JSONException e) {
                     fail();
@@ -142,6 +143,71 @@ public class DataApiUnitTest {
             }
         };
         api.listCategories(1, null, callback);
+        await().untilTrue(finished);
+    }
+
+    @Test
+    public void listParentCategories() throws Exception {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                System.out.print(json);
+                try {
+                    JSONArray items = json.getJSONArray("items");
+                    JSONObject firstItem = items.getJSONObject(0);
+                    int id = firstItem.getInt("id");
+                    assertEquals(3, id);
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.listParentCategories(1, 8, null, callback);
+        await().untilTrue(finished);
+    }
+
+    @Test
+    public void listSiblingCategories() throws Exception {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                int totalResults = 0;
+                try {
+                    totalResults = json.getInt("totalResults");
+                    assertEquals(5, totalResults);    // API Bug?: class="folder"の要素も含まれる
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.listSiblingCategories(1, 5, null, callback);
+        await().untilTrue(finished);
+    }
+
+    @Test
+    public void listChildCategories() throws Exception {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                int totalResults = 0;
+                try {
+                    totalResults = json.getInt("totalResults");
+                    assertEquals(2, totalResults);    // API Bug?: class="folder"の要素も含まれる
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.listChildCategories(1, 5, null, callback);
         await().untilTrue(finished);
     }
 
