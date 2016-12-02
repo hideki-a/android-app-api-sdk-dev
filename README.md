@@ -90,7 +90,7 @@ dependencies {
 
     // 省略
 
-    compile 'pw.anothersky.movabletype.apisdk:mt-data-api-sdk-android:0.1.0'
+    compile 'pw.anothersky.movabletype.apisdk:mt-data-api-sdk-android:0.2.0'
 
     // 省略
 
