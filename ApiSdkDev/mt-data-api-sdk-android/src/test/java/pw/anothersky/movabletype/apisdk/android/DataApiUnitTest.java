@@ -179,7 +179,7 @@ public class DataApiUnitTest {
                 int totalResults = 0;
                 try {
                     totalResults = json.getInt("totalResults");
-                    assertEquals(5, totalResults);    // API Bug?: class="folder"の要素も含まれる
+                    assertEquals(8, totalResults);    // API Bug?: class="folder"の要素も含まれる
                     finished.set(true);
                 } catch (JSONException e) {
                     fail();
@@ -502,6 +502,92 @@ public class DataApiUnitTest {
             }
         };
         api.listPagesForFolder(1, 1, null, callback);
+        await().untilTrue(finished);
+    }
+
+    @Test
+    public void listFolders() throws Exception {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                int totalResults = 0;
+                try {
+                    totalResults = json.getInt("totalResults");
+                    assertEquals(7, totalResults);
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.listFolders(1, null, callback);
+        await().untilTrue(finished);
+    }
+
+    @Test
+    public void listParentFolders() throws Exception {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                System.out.print(json);
+                try {
+                    JSONArray items = json.getJSONArray("items");
+                    JSONObject firstItem = items.getJSONObject(0);
+                    int id = firstItem.getInt("id");
+                    assertEquals(13, id);
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.listParentFolders(1, 15, null, callback);
+        await().untilTrue(finished);
+    }
+
+    @Test
+    public void listSiblingFolders() throws Exception {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                int totalResults = 0;
+                try {
+                    totalResults = json.getInt("totalResults");
+                    assertEquals(2, totalResults);
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.listSiblingFolders(1, 15, null, callback);
+        await().untilTrue(finished);
+    }
+
+    @Test
+    public void listChildFolders() throws Exception {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                int totalResults = 0;
+                try {
+                    totalResults = json.getInt("totalResults");
+                    assertEquals(3, totalResults);    // API Bug?: class="category"の要素も含まれる
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.listChildFolders(1, 13, null, callback);
         await().untilTrue(finished);
     }
 }

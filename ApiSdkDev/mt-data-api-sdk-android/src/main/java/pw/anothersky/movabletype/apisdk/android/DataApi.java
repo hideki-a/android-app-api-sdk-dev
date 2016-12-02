@@ -614,6 +614,65 @@ public class DataApi {
     }
 
     /**
+     * フォルダの一覧を取得します。
+     *
+     * @param siteId ブログID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listFolders(int siteId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        String url = this.apiUrl() + "/sites/" + siteId + "/folders" + paramStr;
+        return this.fetchList(url, callback);
+    }
+
+    /**
+     * 親フォルダを取得します。
+     *
+     * @param siteId ブログID
+     * @param folderId フォルダID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listParentFolders(int siteId, int folderId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        String url = this.apiUrl() + "/sites/" + siteId + "/folders/" + folderId + "/parents" + paramStr;
+        return this.fetchList(url, callback);
+    }
+
+    /**
+     * 兄弟フォルダを取得します。
+     *
+     * @param siteId ブログID
+     * @param folderId フォルダID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listSiblingFolders(int siteId, int folderId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        String url = this.apiUrl() + "/sites/" + siteId + "/folders/" + folderId + "/siblings" + paramStr;
+        return this.fetchList(url, callback);
+    }
+
+    /**
+     * 子フォルダを取得します。
+     *
+     * @param siteId ブログID
+     * @param folderId フォルダID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listChildFolders(int siteId, int folderId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        String url = this.apiUrl() + "/sites/" + siteId + "/folders/" + folderId + "/children" + paramStr;
+        return this.fetchList(url, callback);
+    }
+
+    /**
      * 検索結果を取得します。
      *
      * @param params 検索条件
