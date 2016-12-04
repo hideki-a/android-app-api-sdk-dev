@@ -300,7 +300,7 @@ public class DataApi {
         }
     }
 
-    private JSONObject entryAction(HttpMethod method, String entryClass, int siteId, int entryId, HashMap<String, String> params, final Callback callback) {
+    private JSONObject objectAction(HttpMethod method, String entryClass, int siteId, int targetId, HashMap<String, String> params, final Callback callback) {
         String url = this.apiUrl() + "/sites/" + siteId + "/";
         String paramStr = null;
         String json = null;
@@ -315,10 +315,13 @@ public class DataApi {
             case "page":
                 url = url + "pages";
                 break;
+            case "category":
+                url = url + "categories";
+                break;
         }
 
-        if (entryId != -1) {
-            url = url + "/" + entryId;
+        if (targetId != -1) {
+            url = url + "/" + targetId;
         }
 
         if (HttpMethod.GET == method) {
@@ -428,7 +431,7 @@ public class DataApi {
      * @return JSONObject APIからのレスポンス
      */
     public JSONObject getEntry(int siteId, int entryId, HashMap<String, String> params, final Callback callback) {
-        return this.entryAction(HttpMethod.GET, "entry", siteId, entryId, params, callback);
+        return this.objectAction(HttpMethod.GET, "entry", siteId, entryId, params, callback);
     }
 
     /**
@@ -440,7 +443,7 @@ public class DataApi {
      * @return JSONObject APIからのレスポンス
      */
     public JSONObject createEntry(int siteId, HashMap<String, String> params, final Callback callback) {
-        return this.entryAction(HttpMethod.POST, "entry", siteId, -1, params, callback);
+        return this.objectAction(HttpMethod.POST, "entry", siteId, -1, params, callback);
     }
 
     /**
@@ -453,7 +456,7 @@ public class DataApi {
      * @return JSONObject APIからのレスポンス
      */
     public JSONObject updateEntry(int siteId, int entryId, HashMap<String, String> params, final Callback callback) {
-        return this.entryAction(HttpMethod.PUT, "entry", siteId, entryId, params, callback);
+        return this.objectAction(HttpMethod.PUT, "entry", siteId, entryId, params, callback);
     }
 
     /**
@@ -465,7 +468,7 @@ public class DataApi {
      * @return JSONObject APIからのレスポンス
      */
     public JSONObject deleteEntry(int siteId, int entryId, final Callback callback) {
-        return this.entryAction(HttpMethod.DELETE, "entry", siteId, entryId, null, callback);
+        return this.objectAction(HttpMethod.DELETE, "entry", siteId, entryId, null, callback);
     }
 
     /**
@@ -522,7 +525,7 @@ public class DataApi {
      * @return JSONObject APIからのレスポンス
      */
     public JSONObject getPage(int siteId, int pageId, HashMap<String, String> params, final Callback callback) {
-        return this.entryAction(HttpMethod.GET, "page", siteId, pageId, params, callback);
+        return this.objectAction(HttpMethod.GET, "page", siteId, pageId, params, callback);
     }
 
     /**
@@ -534,7 +537,7 @@ public class DataApi {
      * @return JSONObject APIからのレスポンス
      */
     public JSONObject createPage(int siteId, HashMap<String, String> params, final Callback callback) {
-        return this.entryAction(HttpMethod.POST, "page", siteId, -1, params, callback);
+        return this.objectAction(HttpMethod.POST, "page", siteId, -1, params, callback);
     }
 
     /**
@@ -547,7 +550,7 @@ public class DataApi {
      * @return JSONObject APIからのレスポンス
      */
     public JSONObject updatePage(int siteId, int pageId, HashMap<String, String> params, final Callback callback) {
-        return this.entryAction(HttpMethod.PUT, "page", siteId, pageId, params, callback);
+        return this.objectAction(HttpMethod.PUT, "page", siteId, pageId, params, callback);
     }
 
     /**
@@ -559,7 +562,7 @@ public class DataApi {
      * @return JSONObject APIからのレスポンス
      */
     public JSONObject deletePage(int siteId, int pageId, final Callback callback) {
-        return this.entryAction(HttpMethod.DELETE, "page", siteId, pageId, null, callback);
+        return this.objectAction(HttpMethod.DELETE, "page", siteId, pageId, null, callback);
     }
 
     /**
@@ -619,6 +622,56 @@ public class DataApi {
         String paramStr = this.parseParams(params);
         String url = this.apiUrl() + "/sites/" + siteId + "/categories/" + categoryId + "/children" + paramStr;
         return this.fetchList(url, callback);
+    }
+
+    /**
+     * 指定したIDのカテゴリを取得します。
+     *
+     * @param siteId ブログID
+     * @param categoryId カテゴリID
+     * @param params 取得内容の設定（フィールド設定）
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject getCategory(int siteId, int categoryId, HashMap<String, String> params, final Callback callback) {
+        return this.objectAction(HttpMethod.GET, "category", siteId, categoryId, params, callback);
+    }
+
+    /**
+     * 新規カテゴリを作成します。
+     *
+     * @param siteId ブログID
+     * @param params カテゴリデータ
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject createCategory(int siteId, HashMap<String, String> params, final Callback callback) {
+        return this.objectAction(HttpMethod.POST, "category", siteId, -1, params, callback);
+    }
+
+    /**
+     * 指定したIDのカテゴリを編集します。
+     *
+     * @param siteId ブログID
+     * @param categoryId カテゴリID
+     * @param params カテゴリデータ
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject updateCategory(int siteId, int categoryId, HashMap<String, String> params, final Callback callback) {
+        return this.objectAction(HttpMethod.PUT, "category", siteId, categoryId, params, callback);
+    }
+
+    /**
+     * 指定したIDのカテゴリを削除します。
+     *
+     * @param siteId ブログID
+     * @param categoryId カテゴリID
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject deleteCategory(int siteId, int categoryId, final Callback callback) {
+        return this.objectAction(HttpMethod.DELETE, "category", siteId, categoryId, null, callback);
     }
 
     private JSONObject listEntriesForObject(String objectName, int objectId, String entryClass, int siteId, String paramStr, final Callback callback) {
