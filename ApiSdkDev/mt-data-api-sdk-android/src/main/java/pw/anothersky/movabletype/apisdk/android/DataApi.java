@@ -300,7 +300,7 @@ public class DataApi {
         }
     }
 
-    private JSONObject entryAction(HttpMethod method, String entryClass, int siteId, int entryId, HashMap<String, String> params, final Callback callback) {
+    private JSONObject objectAction(HttpMethod method, String objectName, int siteId, int targetId, HashMap<String, String> params, final Callback callback) {
         String url = this.apiUrl() + "/sites/" + siteId + "/";
         String paramStr = null;
         String json = null;
@@ -308,17 +308,23 @@ public class DataApi {
         RequestBody formBody = null;
         String responseBody = null;
 
-        switch (entryClass) {
+        switch (objectName) {
             case "entry":
                 url = url + "entries";
                 break;
             case "page":
                 url = url + "pages";
                 break;
+            case "category":
+                url = url + "categories";
+                break;
+            case "asset":
+                url = url + "assets";
+                break;
         }
 
-        if (entryId != -1) {
-            url = url + "/" + entryId;
+        if (targetId != -1) {
+            url = url + "/" + targetId;
         }
 
         if (HttpMethod.GET == method) {
@@ -328,7 +334,7 @@ public class DataApi {
             if (params != null) {
                 try {
                     json = this.convertJSON(params);
-                    requestBody.put(entryClass, json);
+                    requestBody.put(objectName, json);
                     formBody = this.parsePostParams(requestBody);
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
@@ -389,6 +395,36 @@ public class DataApi {
     }
 
     /**
+     * 指定したアセットが使用されたブログ記事の一覧を取得します。
+     *
+     * @param siteId ブログID
+     * @param assetId アセットID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listEntriesForAsset(int siteId, int assetId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        String url = this.apiUrl() + "/sites/" + siteId + "/assets/" + assetId + "/entries" + paramStr;
+        return this.fetchList(url, callback);
+    }
+
+    /**
+     * 指定したタグが付与されたブログ記事の一覧を取得します。
+     *
+     * @param siteId ブログID
+     * @param tagId タグID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listEntriesForSiteAndTag(int siteId, int tagId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        String url = this.apiUrl() + "/sites/" + siteId + "/tags/" + tagId + "/entries" + paramStr;
+        return this.fetchList(url, callback);
+    }
+
+    /**
      * 指定したIDの記事を取得します。
      *
      * @param siteId ブログID
@@ -398,7 +434,7 @@ public class DataApi {
      * @return JSONObject APIからのレスポンス
      */
     public JSONObject getEntry(int siteId, int entryId, HashMap<String, String> params, final Callback callback) {
-        return this.entryAction(HttpMethod.GET, "entry", siteId, entryId, params, callback);
+        return this.objectAction(HttpMethod.GET, "entry", siteId, entryId, params, callback);
     }
 
     /**
@@ -410,7 +446,7 @@ public class DataApi {
      * @return JSONObject APIからのレスポンス
      */
     public JSONObject createEntry(int siteId, HashMap<String, String> params, final Callback callback) {
-        return this.entryAction(HttpMethod.POST, "entry", siteId, -1, params, callback);
+        return this.objectAction(HttpMethod.POST, "entry", siteId, -1, params, callback);
     }
 
     /**
@@ -423,7 +459,7 @@ public class DataApi {
      * @return JSONObject APIからのレスポンス
      */
     public JSONObject updateEntry(int siteId, int entryId, HashMap<String, String> params, final Callback callback) {
-        return this.entryAction(HttpMethod.PUT, "entry", siteId, entryId, params, callback);
+        return this.objectAction(HttpMethod.PUT, "entry", siteId, entryId, params, callback);
     }
 
     /**
@@ -435,7 +471,7 @@ public class DataApi {
      * @return JSONObject APIからのレスポンス
      */
     public JSONObject deleteEntry(int siteId, int entryId, final Callback callback) {
-        return this.entryAction(HttpMethod.DELETE, "entry", siteId, entryId, null, callback);
+        return this.objectAction(HttpMethod.DELETE, "entry", siteId, entryId, null, callback);
     }
 
     /**
@@ -453,6 +489,36 @@ public class DataApi {
     }
 
     /**
+     * 指定したアセットが使用されたウェブページの一覧を取得します。
+     *
+     * @param siteId ブログID
+     * @param assetId アセットID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listPagesForAsset(int siteId, int assetId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        String url = this.apiUrl() + "/sites/" + siteId + "/assets/" + assetId + "/pages" + paramStr;
+        return this.fetchList(url, callback);
+    }
+
+    /**
+     * 指定したタグが付与されたウェブページの一覧を取得します。
+     *
+     * @param siteId ブログID
+     * @param tagId タグID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listPagesForSiteAndTag(int siteId, int tagId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        String url = this.apiUrl() + "/sites/" + siteId + "/tags/" + tagId + "/pages" + paramStr;
+        return this.fetchList(url, callback);
+    }
+
+    /**
      * 指定したIDのウェブページを取得します。
      *
      * @param siteId ブログID
@@ -462,7 +528,7 @@ public class DataApi {
      * @return JSONObject APIからのレスポンス
      */
     public JSONObject getPage(int siteId, int pageId, HashMap<String, String> params, final Callback callback) {
-        return this.entryAction(HttpMethod.GET, "page", siteId, pageId, params, callback);
+        return this.objectAction(HttpMethod.GET, "page", siteId, pageId, params, callback);
     }
 
     /**
@@ -474,7 +540,7 @@ public class DataApi {
      * @return JSONObject APIからのレスポンス
      */
     public JSONObject createPage(int siteId, HashMap<String, String> params, final Callback callback) {
-        return this.entryAction(HttpMethod.POST, "page", siteId, -1, params, callback);
+        return this.objectAction(HttpMethod.POST, "page", siteId, -1, params, callback);
     }
 
     /**
@@ -487,7 +553,7 @@ public class DataApi {
      * @return JSONObject APIからのレスポンス
      */
     public JSONObject updatePage(int siteId, int pageId, HashMap<String, String> params, final Callback callback) {
-        return this.entryAction(HttpMethod.PUT, "page", siteId, pageId, params, callback);
+        return this.objectAction(HttpMethod.PUT, "page", siteId, pageId, params, callback);
     }
 
     /**
@@ -499,7 +565,7 @@ public class DataApi {
      * @return JSONObject APIからのレスポンス
      */
     public JSONObject deletePage(int siteId, int pageId, final Callback callback) {
-        return this.entryAction(HttpMethod.DELETE, "page", siteId, pageId, null, callback);
+        return this.objectAction(HttpMethod.DELETE, "page", siteId, pageId, null, callback);
     }
 
     /**
@@ -558,6 +624,71 @@ public class DataApi {
     public JSONObject listChildCategories(int siteId, int categoryId, HashMap<String, String> params, final Callback callback) {
         String paramStr = this.parseParams(params);
         String url = this.apiUrl() + "/sites/" + siteId + "/categories/" + categoryId + "/children" + paramStr;
+        return this.fetchList(url, callback);
+    }
+
+    /**
+     * 指定したIDのカテゴリを取得します。
+     *
+     * @param siteId ブログID
+     * @param categoryId カテゴリID
+     * @param params 取得内容の設定（フィールド設定）
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject getCategory(int siteId, int categoryId, HashMap<String, String> params, final Callback callback) {
+        return this.objectAction(HttpMethod.GET, "category", siteId, categoryId, params, callback);
+    }
+
+    /**
+     * 新規カテゴリを作成します。
+     *
+     * @param siteId ブログID
+     * @param params カテゴリデータ
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject createCategory(int siteId, HashMap<String, String> params, final Callback callback) {
+        return this.objectAction(HttpMethod.POST, "category", siteId, -1, params, callback);
+    }
+
+    /**
+     * 指定したIDのカテゴリを編集します。
+     *
+     * @param siteId ブログID
+     * @param categoryId カテゴリID
+     * @param params カテゴリデータ
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject updateCategory(int siteId, int categoryId, HashMap<String, String> params, final Callback callback) {
+        return this.objectAction(HttpMethod.PUT, "category", siteId, categoryId, params, callback);
+    }
+
+    /**
+     * 指定したIDのカテゴリを削除します。
+     *
+     * @param siteId ブログID
+     * @param categoryId カテゴリID
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject deleteCategory(int siteId, int categoryId, final Callback callback) {
+        return this.objectAction(HttpMethod.DELETE, "category", siteId, categoryId, null, callback);
+    }
+
+    /**
+     * 指定した記事のカテゴリ情報を取得します。
+     *
+     * @param siteId ブログID
+     * @param entryId 記事ID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listCategoriesForEntry(int siteId, int entryId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        String url = this.apiUrl() + "/sites/" + siteId + "/entries/" + entryId + "/categories" + paramStr;
         return this.fetchList(url, callback);
     }
 
@@ -683,5 +814,89 @@ public class DataApi {
         String paramStr = this.parseParams(params);
         String url = this.apiUrl() + "/search" + paramStr;
         return this.fetchList(url, callback);
+    }
+
+    private JSONObject listAssetsForObject(String objectName, int objectId, int siteId, String paramStr, final Callback callback) {
+        String url = this.apiUrl() + "/sites/" + siteId + "/"
+                + objectName + "/" + objectId + "/assets";
+
+        url = url + paramStr;
+
+        if (callback != null) {
+            sendRequestWithCb(HttpMethod.GET, url, null, false, callback);
+            return null;
+        } else {
+            String responseBody = sendRequest(HttpMethod.GET, url, null, false);
+            return buildJSON(responseBody);
+        }
+    }
+
+    /**
+     * 指定したブログのアイテム一覧を取得します。
+     *
+     * @param siteId ブログID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listAssets(int siteId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        String url = this.apiUrl() + "/sites/" + siteId + "/assets" + paramStr;
+        return this.fetchList(url, callback);
+    }
+
+    /**
+     * 指定した記事に属するアイテムを取得一覧します。
+     *
+     * @param siteId ブログID
+     * @param entryId 記事ID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listAssetsForEntry(int siteId, int entryId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        return this.listAssetsForObject("entries", entryId, siteId, paramStr, callback);
+    }
+
+    /**
+     * 指定したウェブページに属するアイテム一覧を取得します。
+     *
+     * @param siteId ブログID
+     * @param pageId ウェブページID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listAssetsForPage(int siteId, int pageId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        return this.listAssetsForObject("pages", pageId, siteId, paramStr, callback);
+    }
+
+    /**
+     * 指定したタグに属するアイテム一覧を取得します。
+     *
+     * @param siteId ブログID
+     * @param tagId タグID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listAssetsForSiteAndTag(int siteId, int tagId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        return this.listAssetsForObject("tags", tagId, siteId, paramStr, callback);
+    }
+
+    /**
+     * 指定したIDのアイテムを取得します。
+     *
+     * @param siteId ブログID
+     * @param assetId アイテムID
+     * @param params 取得内容の設定（フィールド設定）
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject getAsset(int siteId, int assetId, HashMap<String, String> params, final Callback callback) {
+        return this.objectAction(HttpMethod.GET, "asset", siteId, assetId, params, callback);
     }
 }

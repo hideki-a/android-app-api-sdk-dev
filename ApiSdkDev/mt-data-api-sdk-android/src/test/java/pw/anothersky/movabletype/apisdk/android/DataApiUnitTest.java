@@ -1,7 +1,5 @@
 package pw.anothersky.movabletype.apisdk.android;
 
-import android.util.Log;
-
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -29,7 +27,7 @@ public class DataApiUnitTest {
     private static String webservicePassword;
     private static String comment;
 
-    private static int postId = 0;
+    private static int objectId = 0;
 
     private static HashMap makeAuthParams() {
         HashMap<String, String> params = new HashMap<>();
@@ -122,6 +120,48 @@ public class DataApiUnitTest {
             }
         };
         api.listEntries(1, null, callback);
+        await().untilTrue(finished);
+    }
+
+    @Test
+    public void listEntriesForAsset() throws Exception {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                int totalResults = 0;
+                try {
+                    totalResults = json.getInt("totalResults");
+                    assertEquals(1, totalResults);
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.listEntriesForAsset(1, 2, null, callback);
+        await().untilTrue(finished);
+    }
+
+    @Test
+    public void listEntriesForSiteAndTag() throws Exception {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                int totalResults = 0;
+                try {
+                    totalResults = json.getInt("totalResults");
+                    assertEquals(22, totalResults);
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.listEntriesForSiteAndTag(1, 8, null, callback);
         await().untilTrue(finished);
     }
 
@@ -233,6 +273,27 @@ public class DataApiUnitTest {
     }
 
     @Test
+    public void listCategoriesForEntry() throws Exception {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                int totalResults = 0;
+                try {
+                    totalResults = json.getInt("totalResults");
+                    assertEquals(2, totalResults);
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.listCategoriesForEntry(1, 120, null, callback);
+        await().untilTrue(finished);
+    }
+
+    @Test
     public void searchEntries() throws Exception {
         final AtomicBoolean finished = new AtomicBoolean(false);
 
@@ -287,7 +348,7 @@ public class DataApiUnitTest {
                 params.put("status", "Publish");
                 JSONObject json = api.createEntry(2, params, null);
                 try {
-                    postId = json.getInt("id");
+                    objectId = json.getInt("id");
                     finished.set(true);
                 } catch (JSONException e) {
                     fail();
@@ -296,7 +357,7 @@ public class DataApiUnitTest {
         }).start();
 
         await().untilTrue(finished);
-        assertTrue(postId > 0);
+        assertTrue(objectId > 0);
     }
 
     private void getEntry() {
@@ -314,7 +375,7 @@ public class DataApiUnitTest {
                 }
             }
         };
-        api.getEntry(2, postId, null, callback);
+        api.getEntry(2, objectId, null, callback);
         await().untilTrue(finished);
     }
 
@@ -335,7 +396,7 @@ public class DataApiUnitTest {
         };
         HashMap<String, String> params = new HashMap<>();
         params.put("title", "Testing Movable Type Data API SDK for Android");
-        api.updateEntry(2, postId, params, callback);
+        api.updateEntry(2, objectId, params, callback);
         await().untilTrue(finished);
     }
 
@@ -348,14 +409,14 @@ public class DataApiUnitTest {
                 int deletePostId = 0;
                 try {
                     deletePostId = json.getInt("id");
-                    assertEquals(postId, deletePostId);
+                    assertEquals(objectId, deletePostId);
                     finished.set(true);
                 } catch (JSONException e) {
                     fail();
                 }
             }
         };
-        api.deleteEntry(2, postId, callback);
+        api.deleteEntry(2, objectId, callback);
         await().untilTrue(finished);
     }
 
@@ -365,7 +426,102 @@ public class DataApiUnitTest {
         this.getEntry();
         this.updateEntry();
         this.deleteEntry();
-        postId = 0;
+        objectId = 0;
+    }
+
+    private void makeCategory() {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                HashMap<String, String> authParams = makeAuthParams();
+                api.authentication(authParams, null);
+
+                HashMap<String, String> params = new HashMap<>();
+                params.put("label", "旅客機");
+                params.put("basename", "aviation");
+                JSONObject json = api.createCategory(2, params, null);
+                try {
+                    objectId = json.getInt("id");
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        }).start();
+
+        await().untilTrue(finished);
+        assertTrue(objectId > 0);
+    }
+
+    private void getCategory() {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                try {
+                    String label = json.getString("label");
+                    assertEquals("旅客機", label);
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.getCategory(2, objectId, null, callback);
+        await().untilTrue(finished);
+    }
+
+    private void updateCategory() {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                try {
+                    String label = json.getString("label");
+                    assertEquals("航空", label);
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        HashMap<String, String> params = new HashMap<>();
+        params.put("label", "航空");
+        api.updateCategory(2, objectId, params, callback);
+        await().untilTrue(finished);
+    }
+
+    private void deleteCategory() {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                int deletePostId = 0;
+                try {
+                    deletePostId = json.getInt("id");
+                    assertEquals(objectId, deletePostId);
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.deleteCategory(2, objectId, callback);
+        await().untilTrue(finished);
+    }
+
+    @Test
+    public void operateCategory() {
+        this.makeCategory();
+        this.getCategory();
+        this.updateCategory();
+        this.deleteCategory();
+        objectId = 0;
     }
 
     @Test
@@ -388,6 +544,49 @@ public class DataApiUnitTest {
         api.listPages(1, null, callback);
         await().untilTrue(finished);
     }
+
+    @Test
+    public void listPagesForAsset() throws Exception {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                int totalResults = 0;
+                try {
+                    totalResults = json.getInt("totalResults");
+                    assertEquals(1, totalResults);
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.listPagesForAsset(1, 1, null, callback);
+        await().untilTrue(finished);
+    }
+
+    @Test
+    public void listPagesForSiteAndTag() throws Exception {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                int totalResults = 0;
+                try {
+                    totalResults = json.getInt("totalResults");
+                    assertEquals(2, totalResults);
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.listPagesForSiteAndTag(1, 56, null, callback);
+        await().untilTrue(finished);
+    }
+
     private void makePage() {
         final AtomicBoolean finished = new AtomicBoolean(false);
 
@@ -403,7 +602,7 @@ public class DataApiUnitTest {
                 params.put("status", "Publish");
                 JSONObject json = api.createPage(2, params, null);
                 try {
-                    postId = json.getInt("id");
+                    objectId = json.getInt("id");
                     finished.set(true);
                 } catch (JSONException e) {
                     fail();
@@ -412,7 +611,7 @@ public class DataApiUnitTest {
         }).start();
 
         await().untilTrue(finished);
-        assertTrue(postId > 0);
+        assertTrue(objectId > 0);
     }
 
     private void getPage() {
@@ -430,7 +629,7 @@ public class DataApiUnitTest {
                 }
             }
         };
-        api.getPage(2, postId, null, callback);
+        api.getPage(2, objectId, null, callback);
         await().untilTrue(finished);
     }
 
@@ -451,7 +650,7 @@ public class DataApiUnitTest {
         };
         HashMap<String, String> params = new HashMap<>();
         params.put("title", "About Movable Type Data API SDK for Android");
-        api.updatePage(2, postId, params, callback);
+        api.updatePage(2, objectId, params, callback);
         await().untilTrue(finished);
     }
 
@@ -464,14 +663,14 @@ public class DataApiUnitTest {
                 int deletePostId = 0;
                 try {
                     deletePostId = json.getInt("id");
-                    assertEquals(postId, deletePostId);
+                    assertEquals(objectId, deletePostId);
                     finished.set(true);
                 } catch (JSONException e) {
                     fail();
                 }
             }
         };
-        api.deletePage(2, postId, callback);
+        api.deletePage(2, objectId, callback);
         await().untilTrue(finished);
     }
 
@@ -481,7 +680,7 @@ public class DataApiUnitTest {
         this.getPage();
         this.updatePage();
         this.deletePage();
-        postId = 0;
+        objectId = 0;
     }
 
     @Test
@@ -588,6 +787,89 @@ public class DataApiUnitTest {
             }
         };
         api.listChildFolders(1, 13, null, callback);
+        await().untilTrue(finished);
+    }
+
+    @Test
+    public void listAssetsForEntry() throws Exception {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                int totalResults = 0;
+                try {
+                    totalResults = json.getInt("totalResults");
+                    assertEquals(1, totalResults);
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.listAssetsForEntry(1, 120, null, callback);
+        await().untilTrue(finished);
+    }
+
+    @Test
+    public void listAssetsForPage() throws Exception {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                int totalResults = 0;
+                try {
+                    totalResults = json.getInt("totalResults");
+                    assertEquals(1, totalResults);
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.listAssetsForPage(1, 139, null, callback);
+        await().untilTrue(finished);
+    }
+
+    @Test
+    public void listAssetsForSiteAndTag() throws Exception {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                int totalResults = 0;
+                try {
+                    totalResults = json.getInt("totalResults");
+                    assertEquals(1, totalResults);
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.listAssetsForSiteAndTag(1, 18, null, callback);
+        await().untilTrue(finished);
+    }
+
+    @Test
+    public void getAsset() {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                try {
+                    String label = json.getString("label");
+                    assertEquals("アクセシビリティキャンプ東京 2016『日中韓 Webアクセシビリティ サミット』", label);
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.getAsset(1, 2, null, callback);
         await().untilTrue(finished);
     }
 }
