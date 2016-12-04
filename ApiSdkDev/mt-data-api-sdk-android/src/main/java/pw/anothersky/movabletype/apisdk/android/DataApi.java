@@ -389,6 +389,21 @@ public class DataApi {
     }
 
     /**
+     * 指定したアセットが使用されたブログ記事の一覧を取得します。
+     *
+     * @param siteId ブログID
+     * @param assetId アセットID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listEntriesForAsset(int siteId, int assetId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        String url = this.apiUrl() + "/sites/" + siteId + "/assets/" + assetId + "/entries" + paramStr;
+        return this.fetchList(url, callback);
+    }
+
+    /**
      * 指定したタグが付与されたブログ記事の一覧を取得します。
      *
      * @param siteId ブログID
@@ -464,6 +479,21 @@ public class DataApi {
     public JSONObject listPages(int siteId, HashMap<String, String> params, final Callback callback) {
         String paramStr = this.parseParams(params);
         String url = this.apiUrl() + "/sites/" + siteId + "/pages" + paramStr;
+        return this.fetchList(url, callback);
+    }
+
+    /**
+     * 指定したアセットが使用されたウェブページの一覧を取得します。
+     *
+     * @param siteId ブログID
+     * @param assetId アセットID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listPagesForAsset(int siteId, int assetId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        String url = this.apiUrl() + "/sites/" + siteId + "/assets/" + assetId + "/pages" + paramStr;
         return this.fetchList(url, callback);
     }
 

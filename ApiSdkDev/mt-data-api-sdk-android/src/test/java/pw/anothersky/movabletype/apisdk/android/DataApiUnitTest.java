@@ -126,6 +126,27 @@ public class DataApiUnitTest {
     }
 
     @Test
+    public void listEntriesForAsset() throws Exception {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                int totalResults = 0;
+                try {
+                    totalResults = json.getInt("totalResults");
+                    assertEquals(1, totalResults);
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.listEntriesForAsset(1, 2, null, callback);
+        await().untilTrue(finished);
+    }
+
+    @Test
     public void listEntriesForSiteAndTag() throws Exception {
         final AtomicBoolean finished = new AtomicBoolean(false);
 
@@ -407,6 +428,27 @@ public class DataApiUnitTest {
             }
         };
         api.listPages(1, null, callback);
+        await().untilTrue(finished);
+    }
+
+    @Test
+    public void listPagesForAsset() throws Exception {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                int totalResults = 0;
+                try {
+                    totalResults = json.getInt("totalResults");
+                    assertEquals(1, totalResults);
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.listPagesForAsset(1, 1, null, callback);
         await().untilTrue(finished);
     }
 
