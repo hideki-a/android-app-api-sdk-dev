@@ -389,6 +389,21 @@ public class DataApi {
     }
 
     /**
+     * 指定したタグが付与されたブログ記事の一覧を取得します。
+     *
+     * @param siteId ブログID
+     * @param tagId タグID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listEntriesForSiteAndTag(int siteId, int tagId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        String url = this.apiUrl() + "/sites/" + siteId + "/tags/" + tagId + "/entries" + paramStr;
+        return this.fetchList(url, callback);
+    }
+
+    /**
      * 指定したIDの記事を取得します。
      *
      * @param siteId ブログID
@@ -449,6 +464,21 @@ public class DataApi {
     public JSONObject listPages(int siteId, HashMap<String, String> params, final Callback callback) {
         String paramStr = this.parseParams(params);
         String url = this.apiUrl() + "/sites/" + siteId + "/pages" + paramStr;
+        return this.fetchList(url, callback);
+    }
+
+    /**
+     * 指定したタグが付与されたウェブページの一覧を取得します。
+     *
+     * @param siteId ブログID
+     * @param tagId タグID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listPagesForSiteAndTag(int siteId, int tagId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        String url = this.apiUrl() + "/sites/" + siteId + "/tags/" + tagId + "/pages" + paramStr;
         return this.fetchList(url, callback);
     }
 

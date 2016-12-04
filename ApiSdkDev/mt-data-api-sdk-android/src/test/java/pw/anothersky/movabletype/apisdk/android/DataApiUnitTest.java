@@ -126,6 +126,27 @@ public class DataApiUnitTest {
     }
 
     @Test
+    public void listEntriesForSiteAndTag() throws Exception {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                int totalResults = 0;
+                try {
+                    totalResults = json.getInt("totalResults");
+                    assertEquals(22, totalResults);
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.listEntriesForSiteAndTag(1, 8, null, callback);
+        await().untilTrue(finished);
+    }
+
+    @Test
     public void listCategories() throws Exception {
         final AtomicBoolean finished = new AtomicBoolean(false);
 
@@ -388,6 +409,28 @@ public class DataApiUnitTest {
         api.listPages(1, null, callback);
         await().untilTrue(finished);
     }
+
+    @Test
+    public void listPagesForSiteAndTag() throws Exception {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                int totalResults = 0;
+                try {
+                    totalResults = json.getInt("totalResults");
+                    assertEquals(2, totalResults);
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.listPagesForSiteAndTag(1, 56, null, callback);
+        await().untilTrue(finished);
+    }
+
     private void makePage() {
         final AtomicBoolean finished = new AtomicBoolean(false);
 
