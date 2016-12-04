@@ -300,7 +300,7 @@ public class DataApi {
         }
     }
 
-    private JSONObject objectAction(HttpMethod method, String entryClass, int siteId, int targetId, HashMap<String, String> params, final Callback callback) {
+    private JSONObject objectAction(HttpMethod method, String objectName, int siteId, int targetId, HashMap<String, String> params, final Callback callback) {
         String url = this.apiUrl() + "/sites/" + siteId + "/";
         String paramStr = null;
         String json = null;
@@ -308,7 +308,7 @@ public class DataApi {
         RequestBody formBody = null;
         String responseBody = null;
 
-        switch (entryClass) {
+        switch (objectName) {
             case "entry":
                 url = url + "entries";
                 break;
@@ -317,6 +317,9 @@ public class DataApi {
                 break;
             case "category":
                 url = url + "categories";
+                break;
+            case "asset":
+                url = url + "assets";
                 break;
         }
 
@@ -331,7 +334,7 @@ public class DataApi {
             if (params != null) {
                 try {
                     json = this.convertJSON(params);
-                    requestBody.put(entryClass, json);
+                    requestBody.put(objectName, json);
                     formBody = this.parsePostParams(requestBody);
                 } catch (JsonProcessingException e) {
                     e.printStackTrace();
@@ -811,5 +814,89 @@ public class DataApi {
         String paramStr = this.parseParams(params);
         String url = this.apiUrl() + "/search" + paramStr;
         return this.fetchList(url, callback);
+    }
+
+    private JSONObject listAssetsForObject(String objectName, int objectId, int siteId, String paramStr, final Callback callback) {
+        String url = this.apiUrl() + "/sites/" + siteId + "/"
+                + objectName + "/" + objectId + "/assets";
+
+        url = url + paramStr;
+
+        if (callback != null) {
+            sendRequestWithCb(HttpMethod.GET, url, null, false, callback);
+            return null;
+        } else {
+            String responseBody = sendRequest(HttpMethod.GET, url, null, false);
+            return buildJSON(responseBody);
+        }
+    }
+
+    /**
+     * 指定したブログのアイテム一覧を取得します。
+     *
+     * @param siteId ブログID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listAssets(int siteId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        String url = this.apiUrl() + "/sites/" + siteId + "/assets" + paramStr;
+        return this.fetchList(url, callback);
+    }
+
+    /**
+     * 指定した記事に属するアイテムを取得一覧します。
+     *
+     * @param siteId ブログID
+     * @param entryId 記事ID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listAssetsForEntry(int siteId, int entryId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        return this.listAssetsForObject("entries", entryId, siteId, paramStr, callback);
+    }
+
+    /**
+     * 指定したウェブページに属するアイテム一覧を取得します。
+     *
+     * @param siteId ブログID
+     * @param pageId ウェブページID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listAssetsForPage(int siteId, int pageId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        return this.listAssetsForObject("pages", pageId, siteId, paramStr, callback);
+    }
+
+    /**
+     * 指定したタグに属するアイテム一覧を取得します。
+     *
+     * @param siteId ブログID
+     * @param tagId タグID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listAssetsForSiteAndTag(int siteId, int tagId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        return this.listAssetsForObject("tags", tagId, siteId, paramStr, callback);
+    }
+
+    /**
+     * 指定したIDのアイテムを取得します。
+     *
+     * @param siteId ブログID
+     * @param assetId アイテムID
+     * @param params 取得内容の設定（フィールド設定）
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject getAsset(int siteId, int assetId, HashMap<String, String> params, final Callback callback) {
+        return this.objectAction(HttpMethod.GET, "asset", siteId, assetId, params, callback);
     }
 }

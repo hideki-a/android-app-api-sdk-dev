@@ -789,4 +789,87 @@ public class DataApiUnitTest {
         api.listChildFolders(1, 13, null, callback);
         await().untilTrue(finished);
     }
+
+    @Test
+    public void listAssetsForEntry() throws Exception {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                int totalResults = 0;
+                try {
+                    totalResults = json.getInt("totalResults");
+                    assertEquals(1, totalResults);
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.listAssetsForEntry(1, 120, null, callback);
+        await().untilTrue(finished);
+    }
+
+    @Test
+    public void listAssetsForPage() throws Exception {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                int totalResults = 0;
+                try {
+                    totalResults = json.getInt("totalResults");
+                    assertEquals(1, totalResults);
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.listAssetsForPage(1, 139, null, callback);
+        await().untilTrue(finished);
+    }
+
+    @Test
+    public void listAssetsForSiteAndTag() throws Exception {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                int totalResults = 0;
+                try {
+                    totalResults = json.getInt("totalResults");
+                    assertEquals(1, totalResults);
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.listAssetsForSiteAndTag(1, 18, null, callback);
+        await().untilTrue(finished);
+    }
+
+    @Test
+    public void getAsset() {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                try {
+                    String label = json.getString("label");
+                    assertEquals("アクセシビリティキャンプ東京 2016『日中韓 Webアクセシビリティ サミット』", label);
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.getAsset(1, 2, null, callback);
+        await().untilTrue(finished);
+    }
 }
