@@ -273,6 +273,27 @@ public class DataApiUnitTest {
     }
 
     @Test
+    public void listCategoriesForEntry() throws Exception {
+        final AtomicBoolean finished = new AtomicBoolean(false);
+
+        DataApi.Callback callback = new DataApi.Callback() {
+            @Override
+            public void onResponse(JSONObject json) {
+                int totalResults = 0;
+                try {
+                    totalResults = json.getInt("totalResults");
+                    assertEquals(2, totalResults);
+                    finished.set(true);
+                } catch (JSONException e) {
+                    fail();
+                }
+            }
+        };
+        api.listCategoriesForEntry(1, 120, null, callback);
+        await().untilTrue(finished);
+    }
+
+    @Test
     public void searchEntries() throws Exception {
         final AtomicBoolean finished = new AtomicBoolean(false);
 

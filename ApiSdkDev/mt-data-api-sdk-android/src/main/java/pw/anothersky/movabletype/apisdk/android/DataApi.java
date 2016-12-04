@@ -674,6 +674,21 @@ public class DataApi {
         return this.objectAction(HttpMethod.DELETE, "category", siteId, categoryId, null, callback);
     }
 
+    /**
+     * 指定した記事のカテゴリ情報を取得します。
+     *
+     * @param siteId ブログID
+     * @param entryId 記事ID
+     * @param params 抽出条件
+     * @param callback リクエスト成功時に実行するメソッド
+     * @return JSONObject APIからのレスポンス
+     */
+    public JSONObject listCategoriesForEntry(int siteId, int entryId, HashMap<String, String> params, final Callback callback) {
+        String paramStr = this.parseParams(params);
+        String url = this.apiUrl() + "/sites/" + siteId + "/entries/" + entryId + "/categories" + paramStr;
+        return this.fetchList(url, callback);
+    }
+
     private JSONObject listEntriesForObject(String objectName, int objectId, String entryClass, int siteId, String paramStr, final Callback callback) {
         String url = this.apiUrl() + "/sites/" + siteId + "/"
                 + objectName + "/" + objectId + "/";
